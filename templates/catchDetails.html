@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script>
+        function showComments(data)
+        {
+            alert(data.toString());
+        }
+
+        function deleteCatch(id)
+        {
+            if(confirm("Вы уверены, что хотите удалить запись?") == true)
+            {
+                $.ajax({
+                        type: 'DELETE',
+                        url: 'deleteCatch/' + id,
+                        success: function()
+                        {
+                            window.location.href = '/catches'
+                        }
+                    });
+            }
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<style>
+    .main-div
+    {
+        display: flex;
+        margin-left: 20%;
+        margin-top: 30px;
+        position: relative;
+        height: 450px;
+    }
+    p
+    {
+        font-size: large;
+        margin-left: 3%;
+    }
+    h3
+    {
+        margin-bottom: 30px;
+    }
+
+    iframe
+    {
+        margin-left: 10%;
+    }
+    .button-div
+    {
+        position: absolute;
+        bottom: 0; left: 0;
+    }
+
+    h5:hover
+    {
+        cursor: pointer;
+    }
+
+</style>
+</head>
+<body>
+{% include 'navbar.html' %}
+
+<div style="margin-top: 50px;">
+    <h5 style="margin-left: 18%" onclick="window.location.href='/catches'"> ←К списку отловов</h5>
+    <div class="main-div">
+        <div>
+            <h3>Отлов от: {{catch.Date}} </h3>
+            <p>Место отлова: {{catch.Place}}</p>
+            <p>Природная зона: {{catch.Zone}}</p>
+            <p>Стация: {{catch.Station}}</p>
+            <p>Биотоп: {{catch.Biotope}}</p>
+            <p>Количество ловушек: {{catch.Traps_Amount}}</p>
+            <p>Поймано: {{catch.Catched_Amount}}</p>
+            <p onclick="showComments('{{catch.Comments}}')" style="color: blue; text-decoration: underline">Комментарии</p>
+
+            <div class="button-div">
+                <button type="button" class="btn btn-danger" onclick="deleteCatch({{catch.ID_Catch}})">Удалить</button>
+                <button type="button" class="btn btn-primary">Редактировать</button>
+            </div>
+        </div>
+        <iframe width="40%" height="450px" src="https://www.openstreetmap.org/export/embed.html?bbox={{catch.Coords_X}}%2C{{catch.Coords_Y}}%2C{{catch.Coords_X}}%2C{{catch.Coords_Y}}&amp;layer=mapnik&amp;marker={{catch.Coords_Y}}%2C{{catch.Coords_X}}" style="border: 1px solid black"></iframe>
+    <!--525 380-->
+    <!--    "Comments": "аваываыв",-->
+    </div>
+</div>
+</body>
+</html>
