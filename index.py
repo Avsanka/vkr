@@ -58,9 +58,18 @@ def catchDetails(catchID):
 def miceInCatch(catchID):
     with myDbConnection().connect() as db:
         cur = db.cursor()
-        cur.execute(f"select * from mouse where Catch_ID = {catchID}")
+        cur.execute(f"SELECT ID_Mouse, types.Name as Type, pregnancies.Name as Pregnancy, Gender, Age, Embryos_Amount, "
+                    f"diseases.Name as Disease from mouse "
+                    f"left join diseases on mouse.ID_Disease = diseases.Disease_ID "
+                    f"left join types on mouse.Type_ID = types.ID_Type "
+                    f"left join pregnancies on mouse.Pregnancy_ID = pregnancies.ID_Pregnancy "
+                    f"where mouse.Catch_ID = {catchID}")
         mice = cur.fetchall()
-    return mice
+        default = "Информация об отловленных еще не добавлена"
+        if len(mice) == 0:
+            return default
+        else:
+            return mice
 
 @app.route('/addCatch', methods=['GET', 'POST'])
 def addCatch():

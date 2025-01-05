@@ -5,6 +5,7 @@
     <title>Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         function showComments(data)
         {
@@ -25,9 +26,65 @@
                     });
             }
         }
+
+            function getMice(id)
+            {
+                console.log(id);
+            }
+
+        $(document).ready(() =>
+        {
+            $.ajax({
+                type: 'GET',
+                url: '/mice/' + {{catch.ID_Catch}},
+                success: function(answer)
+                {
+                    if (typeof answer == 'string')
+                    {
+                        document.getElementById("forEmpty").innerHTML = answer;
+                        document.getElementById("controls").style.visibility = 'hidden';
+                        
+                    }
+                    else {
+                        var HTML = "";
+                        const table = document.getElementById("data-table");
+                        for (let i = 0; i < answer.length; i++)
+                        {
+                            HTML += "<tr><td class='col-1'>" + answer[i].Type + "</td>";
+                            HTML += "<td class='col-2'>" + answer[i].Gender + "</td>";
+                            HTML += "<td class='col-3'>" + answer[i].Age + "</td>";
+                            HTML += "<td class='col-4'>" + answer[i].Pregnancy + "</td>";
+                            HTML += "<td class='col-5'>" + answer[i].Embryos_Amount + "</td>";
+                            HTML += "<td class='col-6'>" + answer[i].Disease + "</td></tr>";
+                        }
+                        table.innerHTML = HTML;
+                        const controls = document.getElementById('controls');
+                        controls.addEventListener('change', e => {
+                        toggleColumn(e.target.dataset.columnClass);
+                        });
+                    }
+                }
+            });
+        });
+
+
+        function toggleColumn(columnClass) {
+            const cells = document.querySelectorAll(`.${columnClass}`);
+
+          cells.forEach(cell => {
+            cell.classList.toggle('hidden');
+          });
+        }
+
     </script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
+
+    .hidden
+    {
+        display: none;
+    }
+
     .main-div
     {
         display: flex;
@@ -61,13 +118,31 @@
         cursor: pointer;
     }
 
+    .main-table
+    {
+        margin-left: 10%;
+        margin-right: 10%;
+        max-width:80%;
+        margin-top: 1%;
+    }
+
+    .form-check-input
+    {
+        margin-left: 1%;
+    }
+
+    .checks-block
+    {
+        margin-left: 10%;
+        margin-top: 50px;
+    }
 </style>
 </head>
 <body>
 {% include 'navbar.html' %}
 
-<div style="margin-top: 50px;">
-    <h5 style="margin-left: 18%" onclick="window.location.href='/catches'"> ←К списку отловов</h5>
+<div style="margin-top: 30px;">
+    <h6 style="margin-left: 18%" onclick="window.location.href='/catches'"> ←К списку отловов</h6>
     <div class="main-div">
         <div>
             <h3>Отлов от: {{catch.Date}} </h3>
@@ -85,9 +160,54 @@
             </div>
         </div>
         <iframe width="40%" height="450px" src="https://www.openstreetmap.org/export/embed.html?bbox={{catch.Coords_X}}%2C{{catch.Coords_Y}}%2C{{catch.Coords_X}}%2C{{catch.Coords_Y}}&amp;layer=mapnik&amp;marker={{catch.Coords_Y}}%2C{{catch.Coords_X}}" style="border: 1px solid black"></iframe>
-    <!--525 380-->
-    <!--    "Comments": "аваываыв",-->
     </div>
+
+    <hr>
+
+    <div class="checks-block" id="controls">
+        <input class="form-check-input" type="checkbox" id="cType" data-column-class="col-1" checked>
+        <label class="form-check-label" for="cType">Тип
+        </label>
+
+        <input class="form-check-input" type="checkbox" id="cGender" data-column-class="col-2" checked>
+        <label class="form-check-label" for="cGender">Пол
+        </label>
+
+        <input class="form-check-input" type="checkbox" id="cAge" data-column-class="col-3" checked>
+        <label class="form-check-label" for="cAge">Возраст
+        </label>
+
+        <input class="form-check-input" type="checkbox" id="cPregnancy" data-column-class="col-4" checked>
+        <label class="form-check-label" for="cPregnancy">Беременность
+        </label>
+
+        <input class="form-check-input" type="checkbox" id="cEmbryos" data-column-class="col-5" checked>
+        <label class="form-check-label" for="cEmbryos">Кол-во эмбрионов
+        </label>
+
+        <input class="form-check-input" type="checkbox" id="cDisease" data-column-class="col-6" checked>
+        <label class="form-check-label" for="cDisease">Заболевание
+        </label>
+    </div>
+
+    <table class="table table-striped main-table">
+      <thead>
+        <tr>
+          <th class='col-1' scope="col">Тип</th>
+          <th class='col-2' scope="col">Пол</th>
+          <th class='col-3' scope="col">Возраст</th>
+          <th class='col-4' scope="col">Беременность</th>
+          <th class='col-5' scope="col">Количество эмбрионов</th>
+          <th class='col-6' scope="col">Заболевание</th>
+        </tr>
+      </thead>
+      <tbody id="data-table">
+
+      </tbody>
+</table>
+
+<p id = "forEmpty" style="margin-left: 10%;"></p>
 </div>
+{% include 'footer.html' %}
 </body>
 </html>
