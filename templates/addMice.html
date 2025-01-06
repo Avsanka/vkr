@@ -19,8 +19,8 @@
             let HTML = "";
             HTML += '<tr id="' + counter + '"><td><button type="button" class="btn btn-danger" onclick="deleteRow('+ counter + ')">-</button></td>';
             HTML += '<td><select name="type" class="form-select">{% for type in types %}<option value="{{type.ID_Type}}">{{type.Name}}</option>{% endfor %} </select> </td>';
-            HTML += '<td><input name="gender" type="text" class="form-control"></td>';
-            HTML += '<td><input name="age" type="text" class="form-control"></td>';
+            HTML += '<td><input minlength="1" maxlength="1" name="gender" type="text" class="form-control"></td>';
+            HTML += '<td><input minlength="2" maxlength="2" name="age" type="text" class="form-control"></td>';
             HTML += '<td><select name="pregnancy" class="form-select">{% for preg in pregnancies %}<option value="{{preg.ID_Pregnancy}}">{{preg.Name}}</option>{% endfor %} </select> </td>';
             HTML += '<td><input name="embryos" type="number" class="form-control"></td>';
             HTML += '<td><select name="disease" class="form-select">{% for disease in diseases %}<option value="{{disease.Disease_ID}}">{{disease.Name}}</option>{% endfor %} </select> </td>';
@@ -32,9 +32,24 @@
             {
                 $("form").submit(function (e){
                     e.preventDefault();
+
+                    let ages = document.getElementsByName("age")
+                    let genders = document.getElementsByName("gender")
+                    let embryos = document.getElementsByName("embryos");
+                    console.log(embryos[0].value);
+
+                    for(i=0; i < ages.length; i++)
+                    {
+                        if(ages[i].value == "" || genders[i].value == "" || embryos[i].value == "")
+                        {
+                            alert("Заполните все поля!");
+                            return;
+                        }
+                    }
+
                     let p = document.getElementById("success-text");
                     p.style = "color: black";
-                    p.innerHTML = "Добавление...";
+                    p.innerHTML = "Сохранение...";
                     document.getElementById("inp").disabled=true;
 
                     const form = document.getElementById('mainForm');
@@ -59,14 +74,12 @@
                     console.log(JSON.stringify(jsonData));
 
                     $.ajax({
-                        type: 'POST',
-                        url: '/testMethod',
+                        type: 'PUT',
+                        url: '/editMice/' + {{catch.ID_Catch}},
                         data: JSON.stringify(jsonData),
                         success: function()
                         {
-                            p.style = "color: green";
-                            document.getElementById("success-text").innerHTML = "Отлов был добавлен!";
-                            document.getElementById("inp").disabled=false;
+                            window.location.href = '/catchDetails/' + {{catch.ID_Catch}};
                         }
                     });
                 });
@@ -82,10 +95,20 @@
         max-width:90%;
         margin-top: 1%;
     }
+
+    h6
+    {
+        margin-left: 3%;
+        margin-top: 20px;
+    }
+    h6:hover
+    {
+        cursor: pointer;
+    }
 </style>
 <body>
 {% include 'navbar.html' %}
-
+    <h6 onclick="window.location.href='/catchDetails/{{catch.ID_Catch}}'"> ←Назад</h6>
 <form id="mainForm">
 <table class="table table-striped main-table" id="miceTable">
       <thead>
@@ -111,8 +134,8 @@
                     </select>
                 </td>
 
-                <td class='col-2'><input name="gender" type="text" value="{{item.Gender}}" class="form-control"></td>
-                <td class='col-3'><input name="age" type="text" value="{{item.Age}}" class="form-control"></td>
+                <td class='col-2'><input minlength="1" maxlength="1" name="gender" type="text" value="{{item.Gender}}" class="form-control"></td>
+                <td class='col-3'><input minlength="2" maxlength="2" name="age" type="text" value="{{item.Age}}" class="form-control"></td>
 
                 <td class='col-4'>
                     <select name="pregnancy" class="form-select">
@@ -140,7 +163,7 @@
     <button type="button" class="btn btn-success" onclick="addRow()">+</button>
     <input type="submit" value="Сохранить" class="btn btn-primary" id="inp" style="margin-left: 10px;">
 </div>
-<p style="color: green" id="success-text"></p>
+<p style="color: green; margin-left: 5%" id="success-text"></p>
 </form>
 {% include 'footer.html' %}
 </body>

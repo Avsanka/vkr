@@ -161,10 +161,13 @@ def editMice(catchID):
             pregnancies = cur.fetchall()
             cur.execute(f"select * from diseases")
             diseases = cur.fetchall()
+            cur.execute(f"select * from catch where ID_Catch = {catchID}")
+            catch = cur.fetchone()
             return render_template('addMice.html', mice=mice, types=types,
-                                   pregnancies=pregnancies, diseases=diseases)
-
-    myList = request.get_json()
+                                   pregnancies=pregnancies, diseases=diseases, catch=catch)
+    myList = request.get_data()
+    myList = myList.decode("utf-8").replace("'", '"')
+    myList = json.loads(myList)
     try:
         with myDbConnection().connect() as db:
             cur = db.cursor()
@@ -199,11 +202,24 @@ def editCatch(catchID):
     except:
         return "error", http.HTTPStatus(400)
 
-@app.route('/testMethod', methods=['POST'])
-def testMethod():
+@app.route('/deleteMiceList/<int:catchID>', methods=['DELETE'])
+def delMiceList(catchID):
+    with myDbConnection().connect() as db:
+        try:
+            cur = db.cursor()
+            cur.execute(f"delete from mouse where Catch_ID = {catchID}")
+            db.commit()
+            return "success", http.HTTPStatus(200)
+        except:
+            return "error", http.HTTPStatus(400)
+
+@app.route('/testMethod/<int:catchID>', methods=['POST'])
+def testMethod(catchID):
     test = request.get_data()
     test = test.decode("utf-8").replace("'", '"')
     test = json.loads(test)
+    print(test)
+    print(catchID)
     for item in test["mice"]:
         print(item["type"], item["pregnancy"], item["gender"], item["age"], item["embryos"], item["disease"])
     return "success", http.HTTPStatus(200)

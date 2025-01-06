@@ -10,6 +10,30 @@
             {
                 $("form").submit(function (e){
                     e.preventDefault();
+
+                    const date = document.getElementsByName("date");
+                    const place = document.getElementsByName("place");
+                    const cx = document.getElementsByName("cx");
+                    const cy = document.getElementsByName("cy");
+                    const traps = document.getElementsByName("traps");
+                    const catched = document.getElementsByName("catched");
+                    console.log(cx[0].value.length);
+                    if (date[0].value == "" || place[0].value == "" || cx[0].value == "" || cy[0].value == "" || traps[0].value == "" || catched[0].value == "")
+                    {
+                        alert("Заполните все поля!");
+                        return;
+                    }
+                    else if(traps[0].value < catched[0].value)
+                    {
+                        alert("Количество ловушек не может быть меньше количества пойманных");
+                        return;
+                    }
+                    else if(cx[0].value.length < 7 || cy[0].value.length < 7)
+                    {
+                        alert("Неверно заполнены координаты!")
+                        return;
+                    }
+
                     let p = document.getElementById("success-text");
                     p.style = "color: black";
                     p.innerHTML = "Добавление...";
@@ -71,10 +95,10 @@
         <label for="Place">Место</label>
         <input id="Place" class="form-control" type="text" name="place" />
 
-        <label for="Coords_x">Координаты по X (в формате 12.345678)</label>
+        <label for="Coords_x">Координаты по X (в формате 12.34567)</label>
         <input id="Coords_x" class="form-control" type="number" min="0" max="180" step="0.00001" name="cx" />
 
-        <label for="Coords_y">Координаты по Y (в формате 12.345678)</label>
+        <label for="Coords_y">Координаты по Y (в формате 12.34567)</label>
         <input id="Coords_y" class="form-control" type="number" min="0" max="180" step="0.00001" name="cy" />
 
         <label for="Traps">Количество ловушек</label>

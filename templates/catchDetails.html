@@ -76,6 +76,26 @@
           });
         }
 
+        function addMice(id)
+        {
+            window.location.href = '/editMice/' + id;
+        }
+
+        function clearMice(id)
+        {
+            if(confirm("Вы уверены, что хотите удалить список?") == true)
+            {
+                $.ajax({
+                        type: 'DELETE',
+                        url: '/deleteMiceList/' + id,
+                        success: function()
+                        {
+                            window.location.href = '/catchDetails/' + id;
+                        }
+                    });
+            }
+        }
+
     </script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <style>
@@ -113,7 +133,7 @@
         bottom: 0; left: 0;
     }
 
-    h5:hover
+    h6:hover
     {
         cursor: pointer;
     }
@@ -207,6 +227,10 @@
 </table>
 
 <p id = "forEmpty" style="margin-left: 10%;"></p>
+    <div style="display: flex; margin-left: 10%">
+        <button class="btn btn-primary" onclick="addMice('{{catch.ID_Catch}}')">Редактировать список</button>
+        <button class="btn btn-danger" style="margin-left: 10px;" onclick="clearMice('{{catch.ID_Catch}}')">Очистить список</button>
+    </div>
 </div>
 {% include 'footer.html' %}
 </body>
