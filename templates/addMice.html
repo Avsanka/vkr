@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        function deleteRow(id)
+        {
+            document.getElementById(id).remove();
+        }
+        let counter = 10000;
+        function addRow()
+        {
+            let table = document.getElementById("data-table");
+            counter += 1;
+            console.log(counter);
+            let HTML = "";
+            HTML += '<tr id="' + counter + '"><td><button type="button" class="btn btn-danger" onclick="deleteRow('+ counter + ')">-</button></td>';
+            HTML += '<td><select name="type" class="form-select">{% for type in types %}<option value="{{type.ID_Type}}">{{type.Name}}</option>{% endfor %} </select> </td>';
+            HTML += '<td><input name="gender" type="text" class="form-control"></td>';
+            HTML += '<td><input name="age" type="text" class="form-control"></td>';
+            HTML += '<td><select name="pregnancy" class="form-select">{% for preg in pregnancies %}<option value="{{preg.ID_Pregnancy}}">{{preg.Name}}</option>{% endfor %} </select> </td>';
+            HTML += '<td><input name="embryos" type="number" class="form-control"></td>';
+            HTML += '<td><select name="disease" class="form-select">{% for disease in diseases %}<option value="{{disease.Disease_ID}}">{{disease.Name}}</option>{% endfor %} </select> </td>';
+            HTML += '</tr>'
+            table.innerHTML += HTML;
+        }
+
+        $(document).ready(() =>
+            {
+                $("form").submit(function (e){
+                    e.preventDefault();
+                    let p = document.getElementById("success-text");
+                    p.style = "color: black";
+                    p.innerHTML = "Добавление...";
+                    document.getElementById("inp").disabled=true;
+
+                    const form = document.getElementById('mainForm');
+                    const tableRows = form.querySelectorAll('#miceTable tbody tr');
+                    const miceData = [];
+
+                    tableRows.forEach(row => {
+                    const rowData = {
+                        type: parseInt(row.querySelector('select[name="type"]').value),
+                        pregnancy: parseInt(row.querySelector('select[name="pregnancy"]').value),
+                        gender: row.querySelector('input[name="gender"]').value,
+                        age: row.querySelector('input[name="age"]').value,
+                        embryos: parseInt(row.querySelector('input[name="embryos"]').value),
+                        disease: parseInt(row.querySelector('select[name="disease"]').value)
+                    };
+                    miceData.push(rowData);
+                    });
+
+                    const jsonData = {
+                        mice: miceData
+                    };
+                    console.log(JSON.stringify(jsonData));
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/testMethod',
+                        data: JSON.stringify(jsonData),
+                        success: function()
+                        {
+                            p.style = "color: green";
+                            document.getElementById("success-text").innerHTML = "Отлов был добавлен!";
+                            document.getElementById("inp").disabled=false;
+                        }
+                    });
+                });
+            });
+
+    </script>
+</head>
+<style>
+    .main-table
+    {
+        margin-left: 5%;
+        margin-right: 5%;
+        max-width:90%;
+        margin-top: 1%;
+    }
+</style>
+<body>
+{% include 'navbar.html' %}
+
+<form id="mainForm">
+<table class="table table-striped main-table" id="miceTable">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th class='col-1' scope="col">Тип</th>
+          <th class='col-2' scope="col">Пол</th>
+          <th class='col-3' scope="col">Возраст</th>
+          <th class='col-4' scope="col">Беременность</th>
+          <th class='col-5' scope="col">Количество эмбрионов</th>
+          <th class='col-6' scope="col">Заболевание</th>
+        </tr>
+      </thead>
+      <tbody id="data-table">
+        {% for item in mice %}
+            <tr id="{{item.ID_Mouse}}">
+                <td><button type="button" class="btn btn-danger" onclick="deleteRow('{{item.ID_Mouse}}')">-</button></td>
+                <td class='col-1'>
+                    <select name ="type" class="form-select">
+                        {% for type in types %}
+                            <option value="{{type.ID_Type}}" {% if item.Type_ID == type.ID_Type %} selected {% endif %}>{{type.Name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <td class='col-2'><input name="gender" type="text" value="{{item.Gender}}" class="form-control"></td>
+                <td class='col-3'><input name="age" type="text" value="{{item.Age}}" class="form-control"></td>
+
+                <td class='col-4'>
+                    <select name="pregnancy" class="form-select">
+                        {% for preg in pregnancies %}
+                            <option value="{{preg.ID_Pregnancy}}" {% if item.Pregnancy_ID == preg.ID_Pregnancy %} selected {% endif %}>{{preg.Name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <td class='col-5'><input name="embryos" type="number" value="{{item.Embryos_Amount}}" class="form-control"></td>
+
+                <td class='col-6'>
+                    <select name ="disease" class="form-select">
+                        {% for disease in diseases %}
+                            <option value="{{disease.Disease_ID}}" {% if item.ID_Disease == disease.Disease_ID %} selected {% endif %}>{{disease.Name}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+        {% endfor%}
+      </tbody>
+</table>
+
+<div style="display: flex; margin-left: 5%">
+    <button type="button" class="btn btn-success" onclick="addRow()">+</button>
+    <input type="submit" value="Сохранить" class="btn btn-primary" id="inp" style="margin-left: 10px;">
+</div>
+<p style="color: green" id="success-text"></p>
+</form>
+{% include 'footer.html' %}
+</body>
+</html>

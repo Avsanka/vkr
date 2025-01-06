@@ -1,4 +1,5 @@
 import http
+import json
 
 import pymysql
 from flask import Flask, render_template, request, redirect, make_response
@@ -146,8 +147,23 @@ def delCatch(catchID):
         return "error", http.HTTPStatus(400)
 
 
-@app.route("/editMice/<int:catchID>", methods=['PUT'])
+@app.route("/editMice/<int:catchID>", methods=['GET', 'PUT'])
 def editMice(catchID):
+
+    if request.method == 'GET':
+        with myDbConnection().connect() as db:
+            cur = db.cursor()
+            cur.execute(f"select * from mouse where Catch_ID = {catchID}")
+            mice = cur.fetchall()
+            cur.execute(f"select * from types")
+            types = cur.fetchall()
+            cur.execute(f"select * from pregnancies")
+            pregnancies = cur.fetchall()
+            cur.execute(f"select * from diseases")
+            diseases = cur.fetchall()
+            return render_template('addMice.html', mice=mice, types=types,
+                                   pregnancies=pregnancies, diseases=diseases)
+
     myList = request.get_json()
     try:
         with myDbConnection().connect() as db:
@@ -182,6 +198,15 @@ def editCatch(catchID):
             return "success", http.HTTPStatus(200)
     except:
         return "error", http.HTTPStatus(400)
+
+@app.route('/testMethod', methods=['POST'])
+def testMethod():
+    test = request.get_data()
+    test = test.decode("utf-8").replace("'", '"')
+    test = json.loads(test)
+    for item in test["mice"]:
+        print(item["type"], item["pregnancy"], item["gender"], item["age"], item["embryos"], item["disease"])
+    return "success", http.HTTPStatus(200)
 
 #catch'и с сортировкой по дате
 
