@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(() =>
+            {
+                $("form").submit(function (e){
+                    e.preventDefault();
+
+                    const date = document.getElementsByName("date");
+                    const place = document.getElementsByName("place");
+                    const cx = document.getElementsByName("cx");
+                    const cy = document.getElementsByName("cy");
+                    const traps = document.getElementsByName("traps");
+                    const catched = document.getElementsByName("catched");
+                    console.log(cx[0].value.length);
+                    if (date[0].value == "" || place[0].value == "" || cx[0].value == "" || cy[0].value == "" || traps[0].value == "" || catched[0].value == "")
+                    {
+                        alert("Заполните все поля!");
+                        return;
+                    }
+                    else if(traps[0].value < catched[0].value)
+                    {
+                        alert("Количество ловушек не может быть меньше количества пойманных");
+                        return;
+                    }
+                    else if(cx[0].value.length < 7 || cy[0].value.length < 7)
+                    {
+                        alert("Неверно заполнены координаты!")
+                        return;
+                    }
+
+
+                    document.getElementById("inp").disabled=true;
+
+                     $.ajax({
+                        type: 'PUT',
+                        url: '/editCatch/' + {{catch.ID_Catch}},
+                        data: $('form').serialize(),
+                        success: function()
+                        {
+                            window.location.href='/catchDetails/' + {{catch.ID_Catch}};
+                        }
+                    });
+
+                });
+            });
+    </script>
+    <style>
+        label {margin-top: 15px;}
+
+        .form-div
+        {
+            display: flex;
+            justify-content: center;
+            width: 100%; justify-self: center;
+            margin-top: 10px
+        }
+
+    h6
+    {
+        margin-left: 13%;
+        margin-top: 20px;
+    }
+    h6:hover
+    {
+        cursor: pointer;
+    }
+    </style>
+</head>
+<body>
+{% include 'navbar.html' %}
+    <h6 onclick="window.location.href='/catchDetails/{{catch.ID_Catch}}'"> ←Назад</h6>
+<div class="form-div">
+    <form id="mainForm" style="width: 70%">
+        <label for="catchDate">Дата отлова</label>
+        <input id="catchDate" class="form-control" type="date" name="date" value="{{catch.Date}}"/>
+
+        <label for="Zone">Природная зона</label>
+        <select id ="Zone" class="form-select" name="zone">
+            {% for item in zones %}
+                <option value="{{item.ID_Zone}}" {% if item.ID_Zone == catch.Zone_ID %} selected {% endif %} >{{item.Name}}</option>
+            {% endfor %}
+        </select>
+
+        <label for="Station">Стация</label>
+        <select id ="Station" class="form-select" name="station">
+            {% for item in stations %}
+                <option value="{{item.ID_Station}}" {% if item.ID_Station == catch.Station_ID %} selected {% endif %}>{{item.Name}}</option>
+            {% endfor %}
+        </select>
+
+        <label for="Biotope">Биотоп</label>
+        <input id="Biotope" class="form-control" type="text" name="biotope" value="{{catch.Biotope}}" />
+
+        <label for="Place">Место</label>
+        <input id="Place" class="form-control" type="text" name="place" value="{{catch.Place}}"/>
+
+        <label for="Coords_x">Координаты по X (в формате 12.34567)</label>
+        <input id="Coords_x" class="form-control" type="number" min="0" max="180" step="0.00001" name="cx" value="{{catch.Coords_X}}"/>
+
+        <label for="Coords_y">Координаты по Y (в формате 12.34567)</label>
+        <input id="Coords_y" class="form-control" type="number" min="0" max="180" step="0.00001" name="cy" value="{{catch.Coords_Y}}" />
+
+        <label for="Traps">Количество ловушек</label>
+        <input id="Traps" class="form-control" type="number" name="traps" value="{{catch.Traps_Amount}}" />
+
+        <label for="Catched">Количество пойманных</label>
+        <input id="Catched" class="form-control" type="number" name="catched" value="{{catch.Catched_Amount}}" />
+
+        <label for="Comments">Комментарии</label>
+        <input id="Comments" class="form-control" type="text" name="comments" value="{{catch.Comments}}" />
+
+
+        <input type="submit" value="Сохранить" class="btn btn-primary" id="inp" style="margin-top: 10px;">
+        <p style="color: green" id="success-text"></p>
+    </form>
+</div>
+{% include 'footer.html' %}
+</body>
+</html>
+
+
+<!--место-->
+<!--координаты-->
+<!--координаты-->
+<!--ловушки-->
+<!--поймано-->
+<!--комменты-->

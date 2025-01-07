@@ -85,6 +85,7 @@
         {
             if(confirm("Вы уверены, что хотите удалить список?") == true)
             {
+                document.getElementById("clBtn").disabled = true;
                 $.ajax({
                         type: 'DELETE',
                         url: '/deleteMiceList/' + id,
@@ -176,7 +177,7 @@
 
             <div class="button-div">
                 <button type="button" class="btn btn-danger" onclick="deleteCatch({{catch.ID_Catch}})">Удалить</button>
-                <button type="button" class="btn btn-primary">Редактировать</button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/editCatch/{{catch.ID_Catch}}'">Редактировать</button>
             </div>
         </div>
         <iframe width="40%" height="450px" src="https://www.openstreetmap.org/export/embed.html?bbox={{catch.Coords_X}}%2C{{catch.Coords_Y}}%2C{{catch.Coords_X}}%2C{{catch.Coords_Y}}&amp;layer=mapnik&amp;marker={{catch.Coords_Y}}%2C{{catch.Coords_X}}" style="border: 1px solid black"></iframe>
@@ -229,7 +230,7 @@
 <p id = "forEmpty" style="margin-left: 10%;"></p>
     <div style="display: flex; margin-left: 10%">
         <button class="btn btn-primary" onclick="addMice('{{catch.ID_Catch}}')">Редактировать список</button>
-        <button class="btn btn-danger" style="margin-left: 10px;" onclick="clearMice('{{catch.ID_Catch}}')">Очистить список</button>
+        <button class="btn btn-danger" style="margin-left: 10px;" onclick="clearMice('{{catch.ID_Catch}}')" id="clBtn">Очистить список</button>
     </div>
 </div>
 {% include 'footer.html' %}

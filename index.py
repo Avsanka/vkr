@@ -179,8 +179,18 @@ def editMice(catchID):
     except:
         return "error", http.HTTPStatus(400)
 
-@app.route("/editCatch/<int:catchID>", methods=['PUT'])
+@app.route("/editCatch/<int:catchID>", methods=['GET', 'PUT'])
 def editCatch(catchID):
+    if request.method == 'GET':
+        with myDbConnection().connect() as db:
+            cur = db.cursor()
+            cur.execute(f"select * from catch where ID_Catch = {catchID}")
+            catch = cur.fetchone()
+            cur.execute(f"select * from stations")
+            stations = cur.fetchall()
+            cur.execute(f"select * from zones")
+            zones = cur.fetchall()
+            return render_template("editCatch.html", catch=catch, stations=stations, zones=zones)
     date = request.form.get('date', 0)
     zone = request.form.get('zone', 0)
     station = request.form.get('station', 0)
@@ -194,9 +204,10 @@ def editCatch(catchID):
     try:
         with myDbConnection().connect() as db:
             cur = db.cursor()
-            cur.execute(f"DELETE FROM `catch` WHERE `catch`.`ID_Catch` = {catchID}")
-            cur.execute(f"insert into catch(Date, Zone_ID, Station_ID, Biotope, Place, Coords_X, Coords_Y, Traps_Amount, Catched_Amount, Comments)"
-                        f"values ('{date}', '{zone}', '{station}', '{biotope}', '{place}', '{cx}', '{cy}', '{traps}', '{catched}', '{comments}');")
+            cur.execute(f"update catch set Date = '{date}', Zone_ID = '{zone}', Station_ID = '{station}', "
+                        f"Biotope = '{biotope}', Place = '{place}', Coords_X = '{cx}', Coords_Y = '{cy}', "
+                        f"Traps_Amount = '{traps}', Catched_Amount = '{catched}', Comments = '{comments}' "
+                        f"where ID_Catch = {catchID};")
             db.commit()
             return "success", http.HTTPStatus(200)
     except:
