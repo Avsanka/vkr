@@ -1,5 +1,6 @@
 import http
 import json
+import os
 
 import pymysql
 from flask import Flask, render_template, request, redirect, make_response
@@ -11,10 +12,10 @@ class myDbConnection:
         self.connection = None
     def connect(self):
         self.connection = pymysql.connect(
-                            host="localhost",
-                            user="root",
-                            password="root",
-                            db="micecatch",
+                            host=os.getenv('DB_HOST', 'localhost'),
+                            user=os.getenv('DB_USER', 'root'),
+                            password=os.getenv('DB_PASSWORD', 'root'),
+                            db=os.getenv('DB_NAME', 'micecatch'),
                             cursorclass=pymysql.cursors.DictCursor
                             )
         return self.connection
@@ -31,6 +32,10 @@ def allCatches():
         if request.method == 'GET':
             #return catches
             return render_template("index.html", catches=catches)
+
+@app.route('/docker-test', methods=['GET'])
+def dockertest():
+    return "<p>it works!</p>"
 
 @app.route('/catches/<int:year>/<int:month>', methods=['GET'])
 def sortCatches(year, month):
@@ -224,21 +229,10 @@ def delMiceList(catchID):
         except:
             return "error", http.HTTPStatus(400)
 
-@app.route('/testMethod/<int:catchID>', methods=['POST'])
-def testMethod(catchID):
-    test = request.get_data()
-    test = test.decode("utf-8").replace("'", '"')
-    test = json.loads(test)
-    print(test)
-    print(catchID)
-    for item in test["mice"]:
-        print(item["type"], item["pregnancy"], item["gender"], item["age"], item["embryos"], item["disease"])
-    return "success", http.HTTPStatus(200)
-
 #catch'и с сортировкой по дате
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=8081)
+    app.run(debug=True, host='0.0.0.0', port=8081)
 
 
 
