@@ -35,7 +35,7 @@ def allCatches():
 
 @app.route('/docker-test', methods=['GET'])
 def dockertest():
-    return "<p>it works!</p>"
+    return "<p>it works!!!!</p>"
 
 @app.route('/catches/<int:year>/<int:month>', methods=['GET'])
 def sortCatches(year, month):
