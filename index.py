@@ -41,6 +41,10 @@ def dockertest():
 def healthCheck():
     return "success", http.HTTPStatus(200)
 
+@app.route('/error', methods=['GET'])
+def errorCheck():
+    return "error", http.HTTPStatus(500)
+
 @app.route('/catches/<int:year>/<int:month>', methods=['GET'])
 def sortCatches(year, month):
     with myDbConnection().connect() as db:
