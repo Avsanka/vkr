@@ -20,6 +20,7 @@ class myDbConnection:
                             )
         return self.connection
 
+#just testing delete it
 
 
 @app.route('/catches',methods=['GET'])
