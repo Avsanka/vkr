@@ -34,6 +34,8 @@
 
         $(document).ready(() =>
         {
+            document.getElementById("clBtn").disabled = true;
+            document.getElementById("exBtn").disabled = true;
             $.ajax({
                 type: 'GET',
                 url: '/mice/' + {{catch.ID_Catch}},
@@ -43,7 +45,6 @@
                     {
                         document.getElementById("forEmpty").innerHTML = answer;
                         document.getElementById("controls").style.visibility = 'hidden';
-                        
                     }
                     else {
                         var HTML = "";
@@ -62,6 +63,8 @@
                         controls.addEventListener('change', e => {
                         toggleColumn(e.target.dataset.columnClass);
                         });
+                        document.getElementById("clBtn").disabled = false;
+                        document.getElementById("exBtn").disabled = false;
                     }
                 }
             });
@@ -80,6 +83,63 @@
         {
             window.location.href = '/editMice/' + id;
         }
+
+        function downloadExcel()
+        {
+            const table = document.getElementById('data-table');
+            const rows = table.querySelectorAll('tr');
+            let miceData = [];
+            const columns = ['Тип', 'Пол', 'Возраст', 'Беременность', 'Кол-во эмбрионов', 'Заболевание']
+            let activeColumns = [];
+
+            for(let i = 0; i < rows[0].cells.length; i++)
+            {
+                if(!rows[0].cells[i].classList.contains('hidden'))
+                {
+                    activeColumns.push(columns[i]);
+                }
+            }
+
+            for(let i = 0; i<rows.length; i++)
+            {
+                let output = [];
+                const content = rows[i];
+
+                for (let j = 0; j<content.cells.length; j++)
+                {
+                    if(!content.cells[j].classList.contains('hidden')){
+                        output.push(content.cells[j].innerHTML);
+                    }
+                }
+                miceData.push(output);
+            }
+         miceData.push(activeColumns);
+
+        fetch('/downloadExcel/' + {{catch.ID_Catch}}, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(miceData)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.blob();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = '{{catch.Date}}.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error:', error));
+    }
 
         function clearMice(id)
         {
@@ -230,6 +290,7 @@
 <p id = "forEmpty" style="margin-left: 10%;"></p>
     <div style="display: flex; margin-left: 10%">
         <button class="btn btn-primary" onclick="addMice('{{catch.ID_Catch}}')">Редактировать список</button>
+        <button class="btn btn-success" style="margin-left: 10px;" onclick="downloadExcel()" id="exBtn">Скачать</button>
         <button class="btn btn-danger" style="margin-left: 10px;" onclick="clearMice('{{catch.ID_Catch}}')" id="clBtn">Очистить список</button>
     </div>
 </div>

@@ -3,7 +3,9 @@ import json
 import os
 
 import pymysql
-from flask import Flask, render_template, request, redirect, make_response
+import pandas as pd
+import io
+from flask import Flask, render_template, request, redirect, make_response, jsonify, send_file
 app = Flask(__name__)
 
 
@@ -238,48 +240,48 @@ def delMiceList(catchID):
         except:
             return "error", http.HTTPStatus(400)
 
+
+@app.route('/downloadExcel/<int:catchID>', methods=['POST'])
+def downloadExcel(catchID):
+    data = request.get_json()
+    print(data[-1])
+    print(data[0:-1])
+    df = pd.DataFrame(data[0:-1], columns=data[-1])
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Data')
+
+    output.seek(0)
+    return send_file(output, download_name=f"data.xlsx", as_attachment=True), http.HTTPStatus(200)
+
+
 #catch'и с сортировкой по дате
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)
 
-
-
-
-# {
-#     "mice":
-#     [
-#         {
-#             "type": 1,
-#             "pregnancy": 1,
-#             "gender": "a",
-#             "age": "ab",
-#             "embryos": 15,
-#             "disease": 1
+# fetch('/downloadExcel/' + {{catch.ID_Catch}}, {
+#         method: 'POST',
+#         headers: {
+#             'Content-Type': 'application/json'
 #         },
-#         {
-#             "type": 1,
-#             "pregnancy": 1,
-#             "gender": "b",
-#             "age": 10,
-#             "embryos": 150,
-#             "disease": 1
-#         },
-#                 {
-#             "type": 1,
-#             "pregnancy": 1,
-#             "gender": "b",
-#             "age": "aa",
-#             "embryos": 1500,
-#             "disease": 1
-#         },
-#                 {
-#             "type": 1,
-#             "pregnancy": 1,
-#             "gender": "b",
-#             "age": "aa",
-#             "embryos": 1500,
-#             "disease": 1
+#         body: JSON.stringify(miceData)
+#     })
+#     .then(response => {
+#         if (response.ok) {
+#             return response.blob();
 #         }
-#     ]
-# }
+#         throw new Error('Network response was not ok.');
+#     })
+#     .then(blob => {
+#         const url = window.URL.createObjectURL(blob);
+#         const a = document.createElement('a');
+#         a.style.display = 'none';
+#         a.href = url;
+#         a.download = 'data.xlsx';
+#         document.body.appendChild(a);
+#         a.click();
+#         window.URL.revokeObjectURL(url);
+#     })
+#     .catch(error => console.error('Error:', error));
+
