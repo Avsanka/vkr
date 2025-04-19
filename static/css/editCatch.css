@@ -1,0 +1,23 @@
+label {margin-top: 15px;}
+
+        .form-div
+        {
+            display: flex;
+            justify-content: center;
+            width: 100%; justify-self: center;
+            margin-top: 10px
+        }
+
+    h6
+    {
+        margin-left: 13%;
+    }
+    h6:hover
+    {
+        cursor: pointer;
+    }
+
+    html
+    {
+    min-width: 800px;
+    }

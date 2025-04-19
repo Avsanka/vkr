@@ -1,0 +1,13 @@
+        tr:hover
+        {
+            cursor: pointer;
+            background-color: rgba(0, 88, 255, 0.25);
+            -webkit-transition: background-color 200ms linear;
+            -ms-transition: background-color 200ms linear;
+            transition: background-color 200ms linear;
+        }
+
+        html
+        {
+            min-width: 800px;
+        }

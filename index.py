@@ -8,7 +8,6 @@ import io
 from flask import Flask, render_template, request, redirect, make_response, jsonify, send_file
 app = Flask(__name__)
 
-
 class myDbConnection:
     def __init__(self):
         self.connection = None
@@ -22,10 +21,7 @@ class myDbConnection:
                             )
         return self.connection
 
-#just testing delete it
-
-
-@app.route('/catches',methods=['GET'])
+@app.route('/catches', methods=['GET'])
 def allCatches():
     with myDbConnection().connect() as db:
         cur = db.cursor()
@@ -36,17 +32,9 @@ def allCatches():
             #return catches
             return render_template("index.html", catches=catches)
 
-@app.route('/docker-test', methods=['GET'])
-def dockertest():
-    return "<p>it works!!!!</p>"
-
 @app.route('/health', methods=['GET'])
 def healthCheck():
     return "success", http.HTTPStatus(200)
-
-@app.route('/error', methods=['GET'])
-def errorCheck():
-    return "error", http.HTTPStatus(500)
 
 @app.route('/catches/<int:year>/<int:month>', methods=['GET'])
 def sortCatches(year, month):
@@ -244,12 +232,18 @@ def delMiceList(catchID):
 @app.route('/downloadExcel/<int:catchID>', methods=['POST'])
 def downloadExcel(catchID):
     data = request.get_json()
-    print(data[-1])
-    print(data[0:-1])
-    df = pd.DataFrame(data[0:-1], columns=data[-1])
+    # print(data[-1])
+    # print(data)
+    df = pd.DataFrame(data[0:-2], columns=data[-2])
+    # metrics_df = pd.DataFrame(["hallo", "amigo"], columns=['col1'])
     output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        # metrics_df.to_excel(writer, index=False, sheet_name='Data', startrow=0)
         df.to_excel(writer, index=False, sheet_name='Data')
+        for column in df:
+            column_width = max(df[column].astype(str).map(len).max(), len(column)) + 3
+            col_idx = df.columns.get_loc(column)
+            writer.sheets['Data'].set_column(col_idx, col_idx, column_width)
 
     output.seek(0)
     return send_file(output, download_name=f"data.xlsx", as_attachment=True), http.HTTPStatus(200)
@@ -259,29 +253,3 @@ def downloadExcel(catchID):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)
-
-# fetch('/downloadExcel/' + {{catch.ID_Catch}}, {
-#         method: 'POST',
-#         headers: {
-#             'Content-Type': 'application/json'
-#         },
-#         body: JSON.stringify(miceData)
-#     })
-#     .then(response => {
-#         if (response.ok) {
-#             return response.blob();
-#         }
-#         throw new Error('Network response was not ok.');
-#     })
-#     .then(blob => {
-#         const url = window.URL.createObjectURL(blob);
-#         const a = document.createElement('a');
-#         a.style.display = 'none';
-#         a.href = url;
-#         a.download = 'data.xlsx';
-#         document.body.appendChild(a);
-#         a.click();
-#         window.URL.revokeObjectURL(url);
-#     })
-#     .catch(error => console.error('Error:', error));
-

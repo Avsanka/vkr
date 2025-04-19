@@ -1,0 +1,8 @@
+Dockerfile
+db-deployment.yaml
+db-service.yaml
+db/
+docker-compose.yml
+flask-deployment.yaml
+flask-service.yaml
+

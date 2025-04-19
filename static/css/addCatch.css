@@ -1,0 +1,17 @@
+label
+{
+    margin-top: 15px;
+}
+
+.form-div
+{
+    display: flex;
+    justify-content: center;
+    width: 100%; justify-self: center;
+    margin-top: 10px
+}
+
+html
+{
+    min-width: 800px;
+}

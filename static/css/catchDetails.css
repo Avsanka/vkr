@@ -1,0 +1,66 @@
+.hidden
+    {
+        display: none;
+    }
+
+    html
+    {
+        min-width: 800px;
+    }
+
+    .main-div
+    {
+        display: flex;
+        margin-left: 25.5%;
+        margin-top: 30px;
+        position: relative;
+    }
+    p
+    {
+        font-size: large;
+        margin-left: 3%;
+    }
+    h3
+    {
+        margin-bottom: 30px;
+    }
+
+    iframe
+    {
+        margin-left: 10%;
+    }
+    .button-div
+    {
+        position: absolute;
+        bottom: 0; left: 0;
+    }
+
+    h6:hover
+    {
+        cursor: pointer;
+    }
+
+    .main-table
+    {
+        margin-left: 10%;
+        margin-right: 10%;
+        max-width:80%;
+        margin-top: 1%;
+    }
+
+    .form-check-input
+    {
+        margin-left: 1%;
+    }
+
+    .checks-block
+    {
+        margin-left: 10%;
+        margin-top: 50px;
+    }
+
+    h6
+    {
+        margin-left: 18%;
+        font-weight: bold;
+    }
