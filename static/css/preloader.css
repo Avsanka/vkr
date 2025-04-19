@@ -1,0 +1,15 @@
+.preloader-animation {
+    border: 5px solid #CCCCCC; /* толщина круга и его основной цвет*/
+    border-top-color: #303030; /* цвет яркой части круга */
+    height: 50px; /* ширина элемента */
+    width: 50px; /* высота элемента */
+    animation: rotation 1s linear infinite; /* время одного вращения; можно указать дробное значение, например 0.5s */
+    border-radius: 50%;
+}
+
+
+@keyframes rotation {
+    to {
+        transform: rotate(1turn);
+    }
+}

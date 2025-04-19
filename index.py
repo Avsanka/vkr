@@ -1,12 +1,14 @@
 import http
 import json
 import os
-
+from datetime import datetime
 import pymysql
 import pandas as pd
 import io
 from flask import Flask, render_template, request, redirect, make_response, jsonify, send_file
+
 app = Flask(__name__)
+
 
 class myDbConnection:
     def __init__(self):
@@ -23,14 +25,8 @@ class myDbConnection:
 
 @app.route('/catches', methods=['GET'])
 def allCatches():
-    with myDbConnection().connect() as db:
-        cur = db.cursor()
-        cur.execute('select * from catch')
-        catches = cur.fetchall()
-
         if request.method == 'GET':
-            #return catches
-            return render_template("index.html", catches=catches)
+            return render_template("index.html", now=datetime.now())
 
 @app.route('/health', methods=['GET'])
 def healthCheck():
