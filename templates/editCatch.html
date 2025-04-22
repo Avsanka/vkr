@@ -78,6 +78,13 @@
         <label for="Biotope">Биотоп</label>
         <input id="Biotope" class="form-control" type="text" name="biotope" value="{{catch.Biotope}}" />
 
+        <label for="District">Стация</label>
+        <select id ="District" class="form-select" name="district">
+            {% for item in districts %}
+                <option value="{{item.ID_District}}" {% if item.ID_District== catch.District_ID %} selected {% endif %}>{{item.Name}}</option>
+            {% endfor %}
+        </select>
+
         <label for="Place">Место</label>
         <input id="Place" class="form-control" type="text" name="place" value="{{catch.Place}}"/>
 

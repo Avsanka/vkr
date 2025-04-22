@@ -154,8 +154,7 @@
                 miceData.push(output);
             }
          miceData.push(activeColumns);
-// --------------------------------------------------
-         let additionalData = ["{{catch.ID_Catch}}", "{{catch.Catched_Amount / catch.Traps_Amount * 100}}%" ];
+         let additionalData = ["{{catch.Date}}", "{{catch.District}}", "{{catch.Place}}" ];
          miceData.push(additionalData);
 
         fetch('/downloadExcel/' + {{catch.ID_Catch}}, {
@@ -212,6 +211,7 @@
     <div class="main-div">
         <div>
             <h3>Отлов от: {{catch.Date}} </h3>
+            <p>Район: {{catch.District}}</p>
             <p>Место отлова: {{catch.Place}}</p>
             <p>Природная зона: {{catch.Zone}}</p>
             <p>Стация: {{catch.Station}}</p>
@@ -224,14 +224,14 @@
                 <button type="button" class="btn btn-danger" onclick="deleteCatch({{catch.ID_Catch}})">Удалить</button>
             </div>
         </div>
-        <iframe width="40%" height="450px" src="https://www.openstreetmap.org/export/embed.html?bbox={{catch.Coords_X}}%2C{{catch.Coords_Y}}%2C{{catch.Coords_X}}%2C{{catch.Coords_Y}}&amp;layer=mapnik&amp;marker={{catch.Coords_Y}}%2C{{catch.Coords_X}}" style="border: 1px solid black"></iframe>
+        <iframe width="40%" height="550px" src="https://www.openstreetmap.org/export/embed.html?bbox={{catch.Coords_X}}%2C{{catch.Coords_Y}}%2C{{catch.Coords_X}}%2C{{catch.Coords_Y}}&amp;layer=mapnik&amp;marker={{catch.Coords_Y}}%2C{{catch.Coords_X}}" style="border: 1px solid black"></iframe>
     </div>
 
     <hr>
 <!--дашборд-->
      <div class="dashboard">
         <div class="column">
-            <h2>Точность ловушек</h2>
+            <h2>Процент попадания</h2>
             <div class="percentage-div">
                 <p class="percentage" id="accuracy">0</p><p class="percentage">%</p>
             </div>

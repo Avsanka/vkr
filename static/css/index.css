@@ -7,10 +7,54 @@
             transition: background-color 200ms linear;
         }
 
+        tr.header_str:hover
+        {
+            cursor: default;
+            background-color: rgb(255, 255, 255);
+            -webkit-transition: none;
+            -ms-transition: none;
+            transition: none;
+        }
+
         html
         {
-            min-width: 800px;
+            min-width: 1024px;
         }
         .hidden {
              display: none;
+        }
+
+        .filter_container
+        {
+            width: 240px;
+            margin-right: 10px;
+            min-width: 150px;
+        }
+        .filters_controls
+        {
+            margin-top: 10px;
+            margin-left: 5%;
+            display: none;
+            transform: translateY(-30%);
+            animation: ani 0.5s forwards;
+            overflow: hidden;
+        }
+
+        .filter_toggle
+        {
+            display: flex;
+            margin-top: 10px;
+            margin-left: 5%;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        @keyframes ani {
+          0% {transform: translateY(-50%); opacity: 0;}
+        100% {transform: translateY(0); opacity: 1;}
+        }
+        @keyframes ani2 {
+          0% {transform: translateY(0%); opacity: 1;}
+        100% {transform: translateY(-50%); opacity: 0;}
         }

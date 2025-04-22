@@ -11,7 +11,7 @@
     .main-div
     {
         display: flex;
-        margin-left: 25.5%;
+        justify-content: center;
         margin-top: 30px;
         position: relative;
     }
@@ -31,8 +31,7 @@
     }
     .button-div
     {
-        position: absolute;
-        bottom: 0; left: 0;
+
     }
 
     h6:hover
@@ -61,6 +60,6 @@
 
     h6
     {
-        margin-left: 18%;
+        margin-left: 10%;
         font-weight: bold;
     }
