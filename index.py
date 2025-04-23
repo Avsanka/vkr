@@ -1,27 +1,15 @@
 import http
-import json
-import os
-from datetime import datetime
-import pymysql
-import pandas as pd
 import io
-from flask import Flask, render_template, request, redirect, make_response, jsonify, send_file
+import json
+import pandas as pd
+from datetime import datetime
+from flask import Flask, render_template, request, send_file
+
+from db import myDbConnection
+
 
 app = Flask(__name__)
 
-
-class myDbConnection:
-    def __init__(self):
-        self.connection = None
-    def connect(self):
-        self.connection = pymysql.connect(
-                            host=os.getenv('DB_HOST', 'localhost'),
-                            user=os.getenv('DB_USER', 'root'),
-                            password=os.getenv('DB_PASSWORD', 'root'),
-                            db=os.getenv('DB_NAME', 'micecatch'),
-                            cursorclass=pymysql.cursors.DictCursor
-                            )
-        return self.connection
 
 @app.route('/catches', methods=['GET'])
 def allCatches():
@@ -37,21 +25,11 @@ def allCatches():
             return render_template("index.html", now=datetime.now(), districts=districts, zones=zones,
                                    stations=stations)
 
+
 @app.route('/health', methods=['GET'])
 def healthCheck():
     return "success", http.HTTPStatus(200)
 
-@app.route('/catches/<int:year>/<int:month>', methods=['GET'])
-def sortCatches(year, month):
-    with myDbConnection().connect() as db:
-        cur = db.cursor()
-        cur.execute(f"select * from catch where YEAR(Date) = {year} and MONTH(Date) = {month}")
-        default = "Ничего не найдено"
-        catches = cur.fetchall()
-        if len(catches) == 0:
-            return default
-        else:
-            return catches
 
 @app.route('/sortCatches', methods=['POST'])
 def filteredCatches():
@@ -83,8 +61,6 @@ def filteredCatches():
             return catches, http.HTTPStatus(200)
 
 
-
-
 @app.route('/catchDetails/<int:catchID>', methods=['GET'])
 def catchDetails(catchID):
     with myDbConnection().connect() as db:
@@ -97,6 +73,7 @@ def catchDetails(catchID):
                     f"WHERE ID_Catch = {catchID}")
         catch = cur.fetchone()
         return render_template('catchDetails.html', catch=catch)
+
 
 @app.route('/mice/<int:catchID>', methods=['GET'])
 def miceInCatch(catchID):
@@ -114,6 +91,7 @@ def miceInCatch(catchID):
             return default
         else:
             return mice
+
 
 @app.route('/addCatch', methods=['GET', 'POST'])
 def addCatch():
@@ -149,7 +127,7 @@ def addCatch():
         except:
             return "error", http.HTTPStatus(400)
 
-#addMouse
+
 @app.route('/addMouse/<int:catchID>', methods=['POST'])
 def addMouse(catchID):
     catch = catchID
@@ -168,6 +146,7 @@ def addMouse(catchID):
     except:
         return "error", http.HTTPStatus(400)
 
+
 @app.route('/addMice/<int:catchID>', methods = ['POST'])
 def addMice(catchID):
     try:
@@ -180,6 +159,7 @@ def addMice(catchID):
         return "success", http.HTTPStatus(200)
     except:
         return "error", http.HTTPStatus(400)
+
 
 @app.route('/catchDetails/deleteCatch/<int:catchID>', methods = ['DELETE'])
 def delCatch(catchID):
@@ -195,7 +175,6 @@ def delCatch(catchID):
 
 @app.route("/editMice/<int:catchID>", methods=['GET', 'PUT'])
 def editMice(catchID):
-
     if request.method == 'GET':
         with myDbConnection().connect() as db:
             cur = db.cursor()
@@ -219,11 +198,15 @@ def editMice(catchID):
             cur = db.cursor()
             cur.execute(f"DELETE FROM `mouse` WHERE `mouse`.`Catch_ID` = {catchID}")
             for item in myList["mice"]:
-                cur.execute(f"INSERT INTO `mouse` (`ID_Mouse`, `Catch_ID`, `Type_ID`, `Pregnancy_ID`, `Gender`, `Age`, `Embryos_Amount`, `ID_Disease`) VALUES (NULL, '{catchID}', '{item["type"]}', '{item["pregnancy"]}', '{item["gender"]}', '{item["age"]}', '{item["embryos"]}', '{item["disease"]}');")
+                cur.execute(f"INSERT INTO `mouse` (`ID_Mouse`, `Catch_ID`, `Type_ID`, `Pregnancy_ID`, `Gender`, `Age`, "
+                            f"`Embryos_Amount`, `ID_Disease`) VALUES (NULL, '{catchID}', '{item["type"]}', "
+                            f"'{item["pregnancy"]}', '{item["gender"]}', '{item["age"]}', '{item["embryos"]}', "
+                            f"'{item["disease"]}');")
             db.commit()
             return "success", http.HTTPStatus(200)
     except:
         return "error", http.HTTPStatus(400)
+
 
 @app.route("/editCatch/<int:catchID>", methods=['GET', 'PUT'])
 def editCatch(catchID):
@@ -263,6 +246,7 @@ def editCatch(catchID):
     except:
         return "error", http.HTTPStatus(400)
 
+
 @app.route('/deleteMiceList/<int:catchID>', methods=['DELETE'])
 def delMiceList(catchID):
     with myDbConnection().connect() as db:
@@ -293,7 +277,6 @@ def downloadExcel(catchID):
 
     output.seek(0)
     return send_file(output, download_name=f"data.xlsx", as_attachment=True), http.HTTPStatus(200)
-
 
 
 if __name__ == '__main__':
