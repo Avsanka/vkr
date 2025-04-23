@@ -5,4 +5,5 @@ db/
 docker-compose.yml
 flask-deployment.yaml
 flask-service.yaml
+__pycache__
 
