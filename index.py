@@ -49,7 +49,6 @@ def filteredCatches():
     for i in range(len(data[0])):
         query += f" {data[0][i]} = {data[1][i]} and"
     query = query[:-4]
-    print(query)
     default = [{'empty': 0}]
     with myDbConnection().connect() as db:
         cur = db.cursor()
