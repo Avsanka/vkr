@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(() =>
+            {
+                $("form").submit(function (e){
+                    e.preventDefault();
+
+                    const log = document.getElementById('login');
+                    const pass = document.getElementById('password');
+                    const btn = document.getElementById('logBtn');
+                    let p = document.getElementById('msg');
+                    p.innerHTML = "";
+                    btn.disabled = true;
+
+
+                     $.ajax({
+                        type: 'POST',
+                        url: 'login',
+                        data: $('form').serialize(),
+                        success: function(answer)
+                        {
+                            if (answer == "success")
+                            {
+                                window.location.href = "catches";
+                            }
+                            if (answer == "wrong login")
+                            {
+                                btn.disabled = false;
+                                p.innerHTML = "Неверный логин или пароль";
+                                pass.value = "";
+                            }
+                        }
+                    });
+
+                });
+            });
+</script>
+<style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Высота вьюпорта для центрирования вертикально */
+            margin: 0; /* Убираем отступы у body */
+        }
+
+        h5
+        {
+            margin-bottom: 30px;
+        }
+
+        .form-container {
+            width: 300px; /* Ширина формы */
+            padding: 20px; /* Отступы внутри формы */
+            border: 2px solid #cdcdcd; /* Темно-серая рамка */
+            border-radius: 16px; /* Скругленные края */
+        }
+
+        .btn-primary {
+            padding: 10px; /* Отступы внутри кнопки */
+            border: none; /* Убираем рамку */
+            width: 100%; /* Ширина кнопки на всю ширину формы */
+        }
+        p
+        {
+            color: red;
+            margin-bottom: 0;
+            margin-top: 5px;
+        }
+    </style>
+<body>
+    <div class="form-container">
+        <h5>Для продолжения авторизуйтесь в системе</h5>
+        <form>
+          <div class="mb-3">
+            <label for="login" class="form-label">Логин</label>
+            <input type="text" class="form-control" id="login" name="login" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="logBtn">Войти</button>
+            <p id="msg"></p>
+        </form>
+    </div>
+</body>
+</html>

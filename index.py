@@ -3,15 +3,50 @@ import io
 import json
 import pandas as pd
 from datetime import datetime
-from flask import Flask, render_template, request, send_file
-
-from db import myDbConnection
-
+from flask import Flask, render_template, request, send_file, redirect, url_for
+from flask_login import LoginManager, login_user, login_required, logout_user
+from models import myDbConnection, UserLogin
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
+login_manager = LoginManager(app)
+app.secret_key = "super secret key"  # я знаю что так нельзя делать но я сделал
+
+@app.errorhandler(401)
+def unauthorized(error):
+    return redirect(url_for('login'))
+
+@login_manager.user_loader
+def load_user(user_id):
+    return UserLogin().fromDB(user_id)
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        with myDbConnection().connect() as db:
+            cur = db.cursor()
+            log = request.form.get('login', 0)
+            cur.execute(f"select * from users where login = '{log}' limit 1")
+            user = cur.fetchone()
+            if user and check_password_hash(user['hashPassword'], request.form.get('password')):
+                userlogin = UserLogin().create(user)
+                login_user(userlogin, remember=False)
+                return "success"
+    if request.method == 'GET':
+        return render_template("login.html")
+    return "wrong login"
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 
 @app.route('/catches', methods=['GET'])
+@login_required
 def allCatches():
         if request.method == 'GET':
             with myDbConnection().connect() as db:
@@ -32,6 +67,7 @@ def healthCheck():
 
 
 @app.route('/sortCatches', methods=['POST'])
+@login_required
 def filteredCatches():
     data = request.get_json()
     headers = data[0]
@@ -61,6 +97,7 @@ def filteredCatches():
 
 
 @app.route('/catchDetails/<int:catchID>', methods=['GET'])
+@login_required
 def catchDetails(catchID):
     with myDbConnection().connect() as db:
         cur = db.cursor()
@@ -75,6 +112,7 @@ def catchDetails(catchID):
 
 
 @app.route('/mice/<int:catchID>', methods=['GET'])
+@login_required
 def miceInCatch(catchID):
     with myDbConnection().connect() as db:
         cur = db.cursor()
@@ -93,6 +131,7 @@ def miceInCatch(catchID):
 
 
 @app.route('/addCatch', methods=['GET', 'POST'])
+@login_required
 def addCatch():
     if request.method == 'GET':
         with myDbConnection().connect() as db:
@@ -128,6 +167,7 @@ def addCatch():
 
 
 @app.route('/addMouse/<int:catchID>', methods=['POST'])
+@login_required
 def addMouse(catchID):
     catch = catchID
     type_id = request.form.get('type', 0)
@@ -147,6 +187,7 @@ def addMouse(catchID):
 
 
 @app.route('/addMice/<int:catchID>', methods = ['POST'])
+@login_required
 def addMice(catchID):
     try:
         myList = request.get_json()
@@ -161,6 +202,7 @@ def addMice(catchID):
 
 
 @app.route('/catchDetails/deleteCatch/<int:catchID>', methods = ['DELETE'])
+@login_required
 def delCatch(catchID):
     try:
         with myDbConnection().connect() as db:
@@ -173,6 +215,7 @@ def delCatch(catchID):
 
 
 @app.route("/editMice/<int:catchID>", methods=['GET', 'PUT'])
+@login_required
 def editMice(catchID):
     if request.method == 'GET':
         with myDbConnection().connect() as db:
@@ -208,6 +251,7 @@ def editMice(catchID):
 
 
 @app.route("/editCatch/<int:catchID>", methods=['GET', 'PUT'])
+@login_required
 def editCatch(catchID):
     if request.method == 'GET':
         with myDbConnection().connect() as db:
@@ -247,6 +291,7 @@ def editCatch(catchID):
 
 
 @app.route('/deleteMiceList/<int:catchID>', methods=['DELETE'])
+@login_required
 def delMiceList(catchID):
     with myDbConnection().connect() as db:
         try:
@@ -259,6 +304,7 @@ def delMiceList(catchID):
 
 
 @app.route('/downloadExcel/<int:catchID>', methods=['POST'])
+@login_required
 def downloadExcel(catchID):
     data = request.get_json()
     df = pd.DataFrame(data[0:-2], columns=data[-2])
