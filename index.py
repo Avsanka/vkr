@@ -323,6 +323,27 @@ def downloadExcel(catchID):
     output.seek(0)
     return send_file(output, download_name=f"data.xlsx", as_attachment=True), http.HTTPStatus(200)
 
+@app.route('/dashboard', methods=['GET'])
+@login_required
+def showDashboard():
+    return render_template('dashboard.html')
+
+
+@app.route('/getDiseases/<int:year>', methods=['GET'])
+@login_required
+def getDiseases(year):
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"SELECT diseases.Name as disease, count(diseases.Name) as disease_amount "
+                    f"from mouse "
+                    f"left join diseases ON mouse.ID_Disease = diseases.Disease_ID "
+                    f"left join catch ON mouse.Catch_ID = catch.ID_Catch "
+                    f"where YEAR(catch.Date) = {year} GROUP BY diseases.Name")
+        diseases = cur.fetchall()
+        if diseases:
+            return diseases, http.HTTPStatus(200)
+        return [{'disease': 'Нет информации', 'disease_amount': 1}]
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)
