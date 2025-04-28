@@ -1,26 +1,26 @@
 .chart-container
 {
-    width: 500px;
-    height: 500px;
+    width: 33%;
 }
 
 .graph-container
 {
-    width: 1000px;
-    height: 500px;
+    width: 66%;
 }
 
 .dashboard
 {
     width: 80%;
-    margin-left: 10%;
     display: flex;
+    justify-content: center;
+    justify-self: center;
+    margin-top: 16px;
 }
 
 hr
 {
     width: 80%;
-    margin-left: 10%;
+    justify-self: center;
 }
 
 html
