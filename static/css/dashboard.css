@@ -4,11 +4,23 @@
     height: 500px;
 }
 
+.graph-container
+{
+    width: 1000px;
+    height: 500px;
+}
+
 .dashboard
 {
     width: 80%;
     margin-left: 10%;
-    margin-top: 20px;
+    display: flex;
+}
+
+hr
+{
+    width: 80%;
+    margin-left: 10%;
 }
 
 html
@@ -19,8 +31,9 @@ html
 .filter_container
         {
             width: 240px;
-            margin-right: 10px;
             min-width: 150px;
+            margin-left: 10%;
+            margin-top: 20px;
         }
 
 .hidden {

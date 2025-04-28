@@ -345,5 +345,23 @@ def getDiseases(year):
         return [{'disease': 'Нет информации', 'disease_amount': 1}]
 
 
+@app.route('/caughtMiceInYear/<int:year>', methods=['GET'])
+@login_required
+def catchedMiceInYear(year):
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"SELECT MONTH(Date) as month, SUM(Catched_Amount) as amount "
+                    f"from catch "
+                    f"WHERE YEAR(Date) = {year} "
+                    f"GROUP by MONTH(Date)"
+                    f"ORDER by MONTH(Date)")
+        mice = cur.fetchall()
+        for item in mice:
+            item['amount'] = int(item['amount'])
+        if mice:
+            return mice
+        return [{'month': 'Нет информации', 'amount': 0}]
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)
