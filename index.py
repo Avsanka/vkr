@@ -374,7 +374,7 @@ def diseaseMap(year):
                     f"left join diseases ON mouse.ID_Disease = diseases.Disease_ID "
                     f"left join catch on mouse.Catch_ID = catch.ID_Catch "
                     f"WHERE YEAR(catch.Date) = {year} "
-                    f"GROUP by diseases.Name")
+                    f"GROUP by diseases.Name, catch.Coords_X, catch.Coords_Y ")
         data = cur.fetchall()
 
         for item in data:
