@@ -3,151 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>title</title>
+    <title>Мышелов</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="{{url_for('static', filename='css/dashboard.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename='css/preloader.css')}}" rel="stylesheet">
-    <script>
-
-        let chart
-        let mouseChart
-
-        async function fetchDiseaseData(year) {
-            const response = await fetch(`/getDiseases/${year}`);
-            const data = await response.json();
-            return data;
-        }
-
-        function calculatePercentages(data) {
-            const total = data.reduce((sum, entry) => sum + entry.disease_amount, 0);
-            return data.map(entry => ((entry.disease_amount / total) * 100).toFixed(2));
-        }
-
-        async function drawChart(year) {
-            document.getElementById("preloader").classList.remove('hidden');
-            const diseaseData = await fetchDiseaseData(year);
-
-            const diseases = diseaseData.map(entry => entry.disease);
-            const counts = diseaseData.map(entry => entry.disease_amount);
-            const percentages = calculatePercentages(diseaseData);
-
-            const ctx = document.getElementById('diseaseChart').getContext('2d');
-
-            chart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: diseases,
-                    datasets: [{
-                        label: 'Процент от общего числа',
-                        data: percentages,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.6)',
-                            'rgba(54, 162, 235, 0.6)',
-                            'rgba(255, 206, 86, 0.6)',
-                            'rgba(75, 192, 192, 0.6)',
-                            'rgba(153, 102, 255, 0.6)',
-                            'rgba(255, 159, 64, 0.6)',
-                            'rgba(255, 99, 132, 0.6)',
-                            'rgba(54, 162, 235, 0.6)',
-                            'rgba(255, 206, 86, 0.6)',
-                            'rgba(75, 192, 192, 0.6)',
-                            'rgba(153, 102, 255, 0.6)',
-                            'rgba(255, 159, 64, 0.6)',
-                            'rgba(255, 99, 132, 0.6)',
-                            'rgba(54, 162, 235, 0.6)',
-                            'rgba(255, 206, 86, 0.6)',
-                            'rgba(75, 192, 192, 0.6)',
-                            'rgba(153, 102, 255, 0.6)',
-                            'rgba(255, 159, 64, 0.6)',
-                            'rgba(201, 203, 207, 0.6)',
-                            'rgba(0, 255, 0, 0.6)',
-                        ],
-                        borderColor: 'rgba(255, 255, 255, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Распределение обнаруженных заболеваний'
-                        }
-                    }
-                }
-            });
-            document.getElementById("preloader").classList.add('hidden');
-        }
-
-        function miceGraph(year) {
-            const monthNames = [
-                'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-            ];
-
-        fetch(`/caughtMiceInYear/${year}`) // Замените на соответствующий маршрут вашего метода
-            .then(response => response.json())
-            .then(data => {
-                const labels = monthNames;
-                const amounts = Array(12).fill(0);
-
-                // Заполняем массивы значениями
-                for (const item of data) {
-                    //labels.push(monthNames[item.month - 1]); // Добавляем номер месяца
-                    amounts[item.month - 1] = item.amount; // Добавляем количество пойманных мышей
-                }
-
-                // Создание графика
-                const ctx = document.getElementById('mouseChart').getContext('2d');
-                mouseChart = new Chart(ctx, {
-                    type: 'bar', // Тип графика (можно 'line', 'bar', 'pie' и т.д.)
-                    data: {
-                        labels: labels, // Метки по оси x
-                        datasets: [{
-                            label: 'Количество пойманных мышей',
-                            data: amounts, // Данные для графика
-                            backgroundColor: 'rgba(75, 192, 192, 0.6)', // Цвет заливки
-                            borderColor: 'rgba(75, 192, 192, 1)', // Цвет линии
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Ошибка при получении данных:', error));
-        }
-
-
-        $(document).ready(() => {
-            updateDash()
-        });
-
-        function updateDash()
-        {
-            const year = document.getElementById('yearSelect').value;
-                if(chart){
-                    chart.destroy();
-                }
-                if(mouseChart)
-                {
-                    mouseChart.destroy();
-                }
-            drawChart(year);
-            miceGraph(year);
-        }
-    </script>
+    <script src="{{url_for('static', filename='js/dashboard.js')}}"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
     {% include 'navbar.html' %}
@@ -183,6 +47,10 @@
             <canvas id="mouseChart"></canvas>
         </div>
     </div>
+    <hr>
+    <h3 style="margin-left: 10%;">Карта зараженности</h3>
+    <div id="map" class="map"></div>
+    <div id="mapTarget"></div>
 {% include 'footer.html' %}
 </body>
 </html>

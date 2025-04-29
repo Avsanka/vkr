@@ -1,0 +1,17 @@
+.diseases
+{
+    width: 80%;
+    justify-self: center;
+    margin-top: 20px;
+}
+
+.controls
+{
+    display: flex;
+    width: 450px;
+}
+
+#addBtn
+{
+    margin-left: 5px;
+}

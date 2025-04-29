@@ -1,6 +1,7 @@
 import http
 import io
 import json
+import random
 import pandas as pd
 from datetime import datetime
 from flask import Flask, render_template, request, send_file, redirect, url_for
@@ -362,6 +363,51 @@ def catchedMiceInYear(year):
             return mice
         return [{'month': 'Нет информации', 'amount': 0}]
 
+
+@app.route('/diseaseMap/<int:year>', methods=['GET'])
+@login_required
+def diseaseMap(year):
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"SELECT catch.Coords_X, catch.Coords_Y, diseases.Name as disease, COUNT(mouse.ID_Disease) as amount"
+                    f" FROM mouse "
+                    f"left join diseases ON mouse.ID_Disease = diseases.Disease_ID "
+                    f"left join catch on mouse.Catch_ID = catch.ID_Catch "
+                    f"WHERE YEAR(catch.Date) = {year} "
+                    f"GROUP by diseases.Name")
+        data = cur.fetchall()
+
+        for item in data:
+            item['Coords_X'] = float(item['Coords_X'])
+            item['Coords_Y'] = float(item['Coords_Y'])
+            item['Coords_X'] += random.uniform(-0.000999, 0.000999)
+            item['Coords_Y'] += random.uniform(-0.000999, 0.000999)
+            item['Coords_X'] = round(item['Coords_X'], 6)
+            item['Coords_Y'] = round(item['Coords_Y'], 6)
+        print(data)
+        if data:
+            return data
+        else:
+            return [{'Coords_X': 0, 'Coords_Y': 0, 'disease': 'Нет информации', 'amount': 0}]
+
+@app.route('/getAllDiseases', methods=['GET'])
+@login_required
+def getAllDiseases():
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"select Name from diseases")
+        data = cur.fetchall()
+        return render_template("diseases.html", data=data)
+
+
+@app.route('/addDisease/<string:name>', methods=['POST'])
+@login_required
+def addDisease(name):
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"INSERT INTO `diseases` (`Disease_ID`, `Name`) VALUES (NULL, '{name}');")
+        db.commit()
+    return "success", http.HTTPStatus(200)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)
