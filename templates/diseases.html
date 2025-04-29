@@ -29,16 +29,32 @@
                     }
                 });
     }
+
+    function deleteDisease(id)
+    {
+        let div = document.getElementById('d' + id);
+        div.remove();
+
+        $.ajax({
+                    type: 'DELETE',
+                    url: '/deleteDisease/' + id,
+                    success: function(answer)
+                    {
+
+                    }
+                });
+
+    }
 </script>
-
-
 <body>
 {% include 'navbar.html' %}
 <div class="diseases">
     <h3>Список добавленных заболеваний: </h3>
     <hr>
     {% for item in data %}
-    <p>{{item.Name}}</p>
+        <div style="display: flex" id="d{{item.Disease_ID}}">
+            <p>{{item.Name}}</p> <p class="cross" onclick="deleteDisease({{item.Disease_ID}})">❌</p>
+        </div>
     {% endfor %}
     <div class="controls" id="target">
         <input type="text" class="form-control" id="inp" />

@@ -135,15 +135,12 @@ async function fetchDiseaseData(year) {
                     {
                         mapBool = true;
                         diseasesData = answer;
-                        let map = L.map('map').setView([56.52656, 84.97625], 9); // Установите начальные координаты и уровень масштабирования
+                        let map = L.map('map').setView([56.52656, 84.97625], 9);
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                 maxZoom: 19,
                             }).addTo(map);
-                        const minRadius = 150;
-                        const maxRadius = 400;
 
                         diseasesData.forEach(function(data) {
-                            //const radius = Math.min(Math.max(data.amount * 10, minRadius), maxRadius);
                             const radius = 200;
                             L.circle([data.Coords_Y, data.Coords_X], {
                             color: getColor(data.disease),

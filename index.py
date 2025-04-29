@@ -202,7 +202,7 @@ def addMice(catchID):
         return "error", http.HTTPStatus(400)
 
 
-@app.route('/catchDetails/deleteCatch/<int:catchID>', methods = ['DELETE'])
+@app.route('/catchDetails/deleteCatch/<int:catchID>', methods=['DELETE'])
 @login_required
 def delCatch(catchID):
     try:
@@ -384,7 +384,6 @@ def diseaseMap(year):
             item['Coords_Y'] += random.uniform(-0.000999, 0.000999)
             item['Coords_X'] = round(item['Coords_X'], 6)
             item['Coords_Y'] = round(item['Coords_Y'], 6)
-        print(data)
         if data:
             return data
         else:
@@ -395,7 +394,7 @@ def diseaseMap(year):
 def getAllDiseases():
     with myDbConnection().connect() as db:
         cur = db.cursor()
-        cur.execute(f"select Name from diseases")
+        cur.execute(f"select * from diseases")
         data = cur.fetchall()
         return render_template("diseases.html", data=data)
 
@@ -408,6 +407,15 @@ def addDisease(name):
         cur.execute(f"INSERT INTO `diseases` (`Disease_ID`, `Name`) VALUES (NULL, '{name}');")
         db.commit()
     return "success", http.HTTPStatus(200)
+
+@app.route('/deleteDisease/<int:id>', methods=['DELETE'])
+@login_required
+def deleteDisease(id):
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"DELETE FROM `diseases` WHERE `diseases`.`Disease_ID` = {id}")
+        db.commit()
+        return "success", http.HTTPStatus(200)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)

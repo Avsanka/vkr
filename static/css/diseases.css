@@ -15,3 +15,8 @@
 {
     margin-left: 5px;
 }
+
+.cross:hover
+{
+    cursor: pointer;
+}
