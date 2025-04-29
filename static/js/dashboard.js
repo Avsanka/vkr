@@ -153,6 +153,63 @@ async function fetchDiseaseData(year) {
                 });
     }
 
+    function clearBars() {
+    // Удаляем все дочерние элементы внутри bar-container
+    const barContainer = document.querySelector('.bar-container');
+    while (barContainer.firstChild) {
+        barContainer.removeChild(barContainer.firstChild);
+    }
+}
+
+    function drawBar(year)
+    {
+        $.ajax({
+            type: 'GET',
+            url: '/miceGenderStats/' + year,
+            success: function(answer)
+            {
+                const data = answer;
+                const females = data[0][0].fem;
+                const males = data[1][0].male;
+
+                // Расчет общего количества
+                const total = females + males;
+
+                // Расчет процентов
+                const femPercentage = ((females / total) * 100).toFixed(2);
+                const malePercentage = ((males / total) * 100).toFixed(2);
+
+                // Обновление значений на странице
+                document.getElementById('fem-count').innerText = females;
+                document.getElementById('male-count').innerText = males;
+                document.getElementById('fem-percentage').innerText = femPercentage + '%';
+                document.getElementById('male-percentage').innerText = malePercentage + '%';
+
+                // Очищаем предыдущие полосы
+                clearBars();
+
+                // Обновление ширины полосы для женских особей
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.width = femPercentage + '%';
+
+                // Добавляем полосу для женских особей в контейнер
+                document.querySelector('.bar-container').appendChild(bar);
+
+                // Создание и добавление полосы для мужских особей
+                const barMale = document.createElement('div');
+                barMale.className = 'bar bar-male';
+                barMale.style.width = malePercentage + '%';
+
+                // Сдвиг в зависимости от ширины женской полосы
+                barMale.style.position = 'absolute';
+                barMale.style.left = femPercentage + '%';
+
+                document.querySelector('.bar-container').appendChild(barMale);
+            }
+        });
+    }
+
     $(document).ready(() => {
         updateDash();
     });
@@ -173,7 +230,7 @@ async function fetchDiseaseData(year) {
         drawChart(year);
         miceGraph(year);
         drawMap(year);
-
+        drawBar(year);
     }
 
 function getColor(disease) {
@@ -187,3 +244,4 @@ function getColor(disease) {
     };
     return colors[disease] || "grey";
 }
+

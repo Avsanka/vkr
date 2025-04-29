@@ -51,6 +51,17 @@
     <h3 style="margin-left: 10%;">Карта зараженности</h3>
     <div id="map" class="map"></div>
     <div id="mapTarget"></div>
+    <hr>
+    <h3 style="margin-left: 10%;">Соотношение пойманных особей</h3>
+    <div class="container">
+        <div class="ratio-display">
+            <div class="fem-count" style="font-weight: bold">Женские особи: <span id="fem-count">0</span> (<span id="fem-percentage">0%</span>)</div>
+            <div class="bar-container">
+                <div class="bar" id="ratio-bar"></div>
+            </div>
+            <div class="male-count" style="font-weight: bold">Мужские особи: <span id="male-count">0</span> (<span id="male-percentage">0%</span>)</div>
+        </div>
+    </div>
 {% include 'footer.html' %}
 </body>
 </html>

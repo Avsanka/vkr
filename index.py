@@ -417,5 +417,22 @@ def deleteDisease(id):
         db.commit()
         return "success", http.HTTPStatus(200)
 
+@app.route('/miceGenderStats/<int:year>', methods=['GET'])
+@login_required
+def stats(year):
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"select COUNT(mouse.Gender) as fem "
+                    f"FROM mouse "
+                    f"left JOIN catch ON mouse.Catch_ID = catch.ID_Catch "
+                    f"WHERE YEAR(catch.Date) = {year} AND mouse.Gender = 'f'")
+        fem = cur.fetchall()
+        cur.execute(f"select COUNT(mouse.Gender) as male "
+                    f"FROM mouse "
+                    f"left JOIN catch ON mouse.Catch_ID = catch.ID_Catch "
+                    f"WHERE YEAR(catch.Date) = {year} AND mouse.Gender = 'm'")
+        male = cur.fetchall()
+        return [fem, male]
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)
