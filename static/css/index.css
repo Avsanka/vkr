@@ -34,7 +34,8 @@
         {
             margin-top: 10px;
             margin-left: 5%;
-            display: none;
+            display: flex;
+            height: 80px;
             transform: translateY(-30%);
             animation: ani 0.5s forwards;
             overflow: hidden;

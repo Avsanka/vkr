@@ -413,9 +413,12 @@ def addDisease(name):
 def deleteDisease(id):
     with myDbConnection().connect() as db:
         cur = db.cursor()
-        cur.execute(f"DELETE FROM `diseases` WHERE `diseases`.`Disease_ID` = {id}")
-        db.commit()
-        return "success", http.HTTPStatus(200)
+        try:
+            cur.execute(f"DELETE FROM `diseases` WHERE `diseases`.`Disease_ID` = {id}")
+            db.commit()
+            return "success", http.HTTPStatus(200)
+        except:
+            return "error", http.HTTPStatus(200)
 
 @app.route('/miceGenderStats/<int:year>', methods=['GET'])
 @login_required

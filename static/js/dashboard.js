@@ -235,12 +235,19 @@ async function fetchDiseaseData(year) {
 
 function getColor(disease) {
     const colors = {
-        "Заболевание 1": "red",
-        "Заболевание 2": "blue",
-        "Заболевание 3": "green",
-        "Заболевание 4": "yellow",
-        "Заболевание 5": "brown",
-        "Заболевание 6": "purple",
+        "ГАЧ": "Red",
+        "Грипп А": "Blue",
+        "Иерсиниоз": "Green",
+        "ИКБ": "Yellow",
+        "Лептоспироз": "Orange",
+        "ЛЗН": "Purple",
+        "Листериоз": "Pink",
+        "МЭЧ": "Brown",
+        "Орнитоз": "Cyan",
+        "Псевдо и иерсиниоз": "Magenta",
+        "Псевдотуберкулез": "Teal",
+        "Туляремия": "Indigo",
+        "Хантавирусы": "Black"
     };
     return colors[disease] || "grey";
 }
