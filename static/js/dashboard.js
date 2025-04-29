@@ -15,7 +15,8 @@ async function fetchDiseaseData(year) {
 
     async function drawChart(year) {
         document.getElementById("preloader").classList.remove('hidden');
-        const diseaseData = await fetchDiseaseData(year);
+        const data = await fetchDiseaseData(year);
+        const diseaseData = data.filter(item => item.disease !== 'Не обнаружено');
 
         const diseases = diseaseData.map(entry => entry.disease);
         const counts = diseaseData.map(entry => entry.disease_amount);
@@ -141,12 +142,15 @@ async function fetchDiseaseData(year) {
                             }).addTo(map);
 
                         diseasesData.forEach(function(data) {
-                            const radius = 200;
-                            L.circle([data.Coords_Y, data.Coords_X], {
-                            color: getColor(data.disease),
-                            radius: radius
-                            }).addTo(map)
-                            .bindPopup(data.disease + "\nКоличество: " + data.amount);
+                            if(data.disease != "Не обнаружено")
+                            {
+                                const radius = 200;
+                                L.circle([data.Coords_Y, data.Coords_X], {
+                                color: getColor(data.disease),
+                                radius: radius
+                                }).addTo(map)
+                                .bindPopup(data.disease + "\nКоличество: " + data.amount);
+                            }
                         });
                         document.getElementById('yearSelect').disabled = false;
                     }
@@ -249,6 +253,6 @@ function getColor(disease) {
         "Туляремия": "Indigo",
         "Хантавирусы": "Black"
     };
-    return colors[disease] || "grey";
+    return colors[disease] || "Red";
 }
 
