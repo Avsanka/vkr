@@ -42,6 +42,10 @@
 
                     for(i=0; i < ages.length; i++)
                     {
+                        if(embryos[i].value == "" || parseInt(embryos[i].value) < 0)
+                        {
+                            embryos[i].value = 0;
+                        }
                         if(ages[i].value == "" || genders[i].value == "" || embryos[i].value == "")
                         {
                             alert("Заполните все поля!");
@@ -110,18 +114,18 @@
             <tr id="{{item.ID_Mouse}}">
                 <td><button type="button" class="btn btn-danger" onclick="deleteRow('{{item.ID_Mouse}}')">-</button></td>
                 <td class='col-1'>
-                    <select name ="type" class="form-select">
+                    <select name ="type" class="form-select" style="width: 250px;">
                         {% for type in types %}
                             <option value="{{type.ID_Type}}" {% if item.Type_ID == type.ID_Type %} selected {% endif %}>{{type.Name}}</option>
                         {% endfor %}
                     </select>
                 </td>
 
-                <td class='col-2'><input minlength="1" maxlength="1" name="gender" type="text" value="{{item.Gender}}" class="form-control"></td>
+                <td class='col-2'><input minlength="1" maxlength="1" name="gender" type="text" value="{{item.Gender}}" class="form-control" style="min-width: 50px;"></td>
                 <td class='col-3'><input minlength="2" maxlength="2" name="age" type="text" value="{{item.Age}}" class="form-control"></td>
 
                 <td class='col-4'>
-                    <select name="pregnancy" class="form-select">
+                    <select name="pregnancy" class="form-select" >
                         {% for preg in pregnancies %}
                             <option value="{{preg.ID_Pregnancy}}" {% if item.Pregnancy_ID == preg.ID_Pregnancy %} selected {% endif %}>{{preg.Name}}</option>
                         {% endfor %}
@@ -131,7 +135,7 @@
                 <td class='col-5'><input name="embryos" type="number" value="{{item.Embryos_Amount}}" class="form-control"></td>
 
                 <td class='col-6'>
-                    <select name ="disease" class="form-select">
+                    <select name ="disease" class="form-select" style="width: 250px;">
                         {% for disease in diseases %}
                             <option value="{{disease.Disease_ID}}" {% if item.ID_Disease == disease.Disease_ID %} selected {% endif %}>{{disease.Name}}</option>
                         {% endfor %}
