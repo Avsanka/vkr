@@ -156,21 +156,18 @@ async function fetchDiseaseData(year) {
                         cy = diseasesData[0].Coords_Y;
 
                         diseasesData.forEach(function(data) {
-                            if(data.disease != "Не обнаружено")
+                            if(cx != data.Coords_X || cy != data.Coords_Y)
                             {
-                                if(cx != data.Coords_X || cy != data.Coords_Y)
-                                {
-                                    pops.shift();
-                                }
-                                const radius = 300;
-                                L.circle([data.Coords_Y, data.Coords_X], {
-                                color: "Red",
-                                radius: radius
-                                }).addTo(map)
-                                .bindPopup(pops[0]);
-                                cx = data.Coords_X;
-                                cy = data.Coords_Y;
+                                pops.shift();
                             }
+                            const radius = 300;
+                            L.circle([data.Coords_Y, data.Coords_X], {
+                            color: "Red",
+                            radius: radius
+                            }).addTo(map)
+                            .bindPopup(pops[0]);
+                            cx = data.Coords_X;
+                            cy = data.Coords_Y;
                         });
                         document.getElementById('yearSelect').disabled = false;
                     }
