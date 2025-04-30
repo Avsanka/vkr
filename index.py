@@ -374,14 +374,15 @@ def diseaseMap(year):
                     f"left join diseases ON mouse.ID_Disease = diseases.Disease_ID "
                     f"left join catch on mouse.Catch_ID = catch.ID_Catch "
                     f"WHERE YEAR(catch.Date) = {year} "
-                    f"GROUP by diseases.Name, catch.Coords_X, catch.Coords_Y ")
+                    f"GROUP by diseases.Name, catch.Coords_X, catch.Coords_Y "
+                    f"order by catch.Coords_X, catch.Coords_Y ")
         data = cur.fetchall()
 
         for item in data:
             item['Coords_X'] = float(item['Coords_X'])
             item['Coords_Y'] = float(item['Coords_Y'])
-            item['Coords_X'] += random.uniform(-0.002999, 0.002999)
-            item['Coords_Y'] += random.uniform(-0.002999, 0.002999)
+            #item['Coords_X'] += random.uniform(-0.002999, 0.002999)
+            #item['Coords_Y'] += random.uniform(-0.002999, 0.002999)
             item['Coords_X'] = round(item['Coords_X'], 6)
             item['Coords_Y'] = round(item['Coords_Y'], 6)
         if data:

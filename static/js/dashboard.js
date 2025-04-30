@@ -141,15 +141,35 @@ async function fetchDiseaseData(year) {
                                 maxZoom: 19,
                             }).addTo(map);
 
+                        const pops = Object.values(diseasesData.reduce((acc, {Coords_X, Coords_Y, amount, disease}) => {
+                            const key = `${Coords_X},${Coords_Y}`;
+                            if (!acc[key]) {
+                                acc[key] = {};
+                            }
+                            acc[key][disease] = (acc[key][disease] || 0) + amount;
+                            return acc;
+                        }, {})).map(obj => {
+                            return Object.entries(obj).map(([disease, amount]) => `${disease}: ${amount}`).join(', ');
+                        });
+
+                        cx = diseasesData[0].Coords_X;
+                        cy = diseasesData[0].Coords_Y;
+
                         diseasesData.forEach(function(data) {
                             if(data.disease != "Не обнаружено")
                             {
-                                const radius = 250;
+                                if(cx != data.Coords_X || cy != data.Coords_Y)
+                                {
+                                    pops.shift();
+                                }
+                                const radius = 300;
                                 L.circle([data.Coords_Y, data.Coords_X], {
-                                color: getColor(data.disease),
+                                color: "Red",
                                 radius: radius
                                 }).addTo(map)
-                                .bindPopup(data.disease + "\nКоличество: " + data.amount);
+                                .bindPopup(pops[0]);
+                                cx = data.Coords_X;
+                                cy = data.Coords_Y;
                             }
                         });
                         document.getElementById('yearSelect').disabled = false;
@@ -158,7 +178,6 @@ async function fetchDiseaseData(year) {
     }
 
     function clearBars() {
-    // Удаляем все дочерние элементы внутри bar-container
     const barContainer = document.querySelector('.bar-container');
     while (barContainer.firstChild) {
         barContainer.removeChild(barContainer.firstChild);
@@ -176,36 +195,27 @@ async function fetchDiseaseData(year) {
                 const females = data[0][0].fem;
                 const males = data[1][0].male;
 
-                // Расчет общего количества
                 const total = females + males;
 
-                // Расчет процентов
                 const femPercentage = ((females / total) * 100).toFixed(2);
                 const malePercentage = ((males / total) * 100).toFixed(2);
 
-                // Обновление значений на странице
                 document.getElementById('fem-count').innerText = females;
                 document.getElementById('male-count').innerText = males;
                 document.getElementById('fem-percentage').innerText = femPercentage + '%';
                 document.getElementById('male-percentage').innerText = malePercentage + '%';
-
-                // Очищаем предыдущие полосы
                 clearBars();
 
-                // Обновление ширины полосы для женских особей
                 const bar = document.createElement('div');
                 bar.className = 'bar';
                 bar.style.width = femPercentage + '%';
 
-                // Добавляем полосу для женских особей в контейнер
                 document.querySelector('.bar-container').appendChild(bar);
 
-                // Создание и добавление полосы для мужских особей
                 const barMale = document.createElement('div');
                 barMale.className = 'bar bar-male';
                 barMale.style.width = malePercentage + '%';
 
-                // Сдвиг в зависимости от ширины женской полосы
                 barMale.style.position = 'absolute';
                 barMale.style.left = femPercentage + '%';
 
@@ -237,22 +247,22 @@ async function fetchDiseaseData(year) {
         drawBar(year);
     }
 
-function getColor(disease) {
-    const colors = {
-        "ГАЧ": "Red",
-        "Грипп А": "Blue",
-        "Иерсиниоз": "Green",
-        "ИКБ": "Yellow",
-        "Лептоспироз": "Orange",
-        "ЛЗН": "Purple",
-        "Листериоз": "Pink",
-        "МЭЧ": "Brown",
-        "Орнитоз": "Cyan",
-        "Псевдо и иерсиниоз": "Magenta",
-        "Псевдотуберкулез": "Teal",
-        "Туляремия": "Indigo",
-        "Хантавирусы": "Black"
-    };
-    return colors[disease] || "Red";
-}
+//function getColor(disease) {
+//    const colors = {
+//        "ГАЧ": "Red",
+//        "Грипп А": "Blue",
+//        "Иерсиниоз": "Green",
+//        "ИКБ": "Yellow",
+//        "Лептоспироз": "Orange",
+//        "ЛЗН": "Purple",
+//        "Листериоз": "Pink",
+//        "МЭЧ": "Brown",
+//        "Орнитоз": "Cyan",
+//        "Псевдо и иерсиниоз": "Magenta",
+//        "Псевдотуберкулез": "Teal",
+//        "Туляремия": "Indigo",
+//        "Хантавирусы": "Black"
+//    };
+//    return colors[disease] || "Red";
+//}
 
