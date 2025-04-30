@@ -17,15 +17,14 @@
         {
             let table = document.getElementById("data-table");
             counter += 1;
-            console.log(counter);
             let HTML = "";
             HTML += '<tr id="' + counter + '"><td><button type="button" class="btn btn-danger" onclick="deleteRow('+ counter + ')">-</button></td>';
-            HTML += '<td><select name="type" class="form-select">{% for type in types %}<option value="{{type.ID_Type}}">{{type.Name}}</option>{% endfor %} </select> </td>';
-            HTML += '<td><input minlength="1" maxlength="1" name="gender" type="text" class="form-control"></td>';
+            HTML += '<td><select name="type" class="form-select" style="width: 250px;">{% for type in types %}<option value="{{type.ID_Type}}">{{type.Name}}</option>{% endfor %} </select> </td>';
+            HTML += '<td><input minlength="1" maxlength="1" name="gender" type="text" class="form-control" style="min-width: 50px;"></td>';
             HTML += '<td><input minlength="2" maxlength="2" name="age" type="text" class="form-control"></td>';
             HTML += '<td><select name="pregnancy" class="form-select">{% for preg in pregnancies %}<option value="{{preg.ID_Pregnancy}}">{{preg.Name}}</option>{% endfor %} </select> </td>';
             HTML += '<td><input name="embryos" type="number" class="form-control"></td>';
-            HTML += '<td><select name="disease" class="form-select">{% for disease in diseases %}<option value="{{disease.Disease_ID}}">{{disease.Name}}</option>{% endfor %} </select> </td>';
+            HTML += '<td><select name="disease" class="form-select" style="width: 250px;">{% for disease in diseases %}<option value="{{disease.Disease_ID}}">{{disease.Name}}</option>{% endfor %} </select> </td>';
             HTML += '</tr>'
             table.innerHTML += HTML;
         }
@@ -38,7 +37,6 @@
                     let ages = document.getElementsByName("age")
                     let genders = document.getElementsByName("gender")
                     let embryos = document.getElementsByName("embryos");
-                    console.log(embryos[0].value);
 
                     for(i=0; i < ages.length; i++)
                     {
@@ -77,7 +75,6 @@
                     const jsonData = {
                         mice: miceData
                     };
-                    console.log(JSON.stringify(jsonData));
 
                     $.ajax({
                         type: 'PUT',

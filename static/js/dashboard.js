@@ -144,7 +144,7 @@ async function fetchDiseaseData(year) {
                         diseasesData.forEach(function(data) {
                             if(data.disease != "Не обнаружено")
                             {
-                                const radius = 200;
+                                const radius = 250;
                                 L.circle([data.Coords_Y, data.Coords_X], {
                                 color: getColor(data.disease),
                                 radius: radius

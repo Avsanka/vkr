@@ -380,8 +380,8 @@ def diseaseMap(year):
         for item in data:
             item['Coords_X'] = float(item['Coords_X'])
             item['Coords_Y'] = float(item['Coords_Y'])
-            item['Coords_X'] += random.uniform(-0.000999, 0.000999)
-            item['Coords_Y'] += random.uniform(-0.000999, 0.000999)
+            item['Coords_X'] += random.uniform(-0.002999, 0.002999)
+            item['Coords_Y'] += random.uniform(-0.002999, 0.002999)
             item['Coords_X'] = round(item['Coords_X'], 6)
             item['Coords_Y'] = round(item['Coords_Y'], 6)
         if data:
