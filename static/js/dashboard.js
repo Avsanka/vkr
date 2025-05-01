@@ -16,7 +16,7 @@ async function fetchDiseaseData(year) {
     async function drawChart(year) {
         document.getElementById("preloader").classList.remove('hidden');
         const data = await fetchDiseaseData(year);
-        const diseaseData = data.filter(item => item.disease !== 'Не обнаружено');
+        const diseaseData = data.filter(item => item.disease !== 'Не обнаружено').filter(item => item.disease !== 'Не исследовано');
 
         const diseases = diseaseData.map(entry => entry.disease);
         const counts = diseaseData.map(entry => entry.disease_amount);

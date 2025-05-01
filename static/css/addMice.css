@@ -19,3 +19,15 @@
     {
         min-width: 1024px;
     }
+
+    .dropdown
+    {
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+    }
+
+
+
+    .selectpicker {
+        display: none;
+    }

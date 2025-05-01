@@ -59,9 +59,11 @@
     <h3>Список добавленных заболеваний: </h3>
     <hr>
     {% for item in data %}
-        <div style="display: flex" id="d{{item.Disease_ID}}">
-            <p>{{item.Name}}</p> <p class="cross" onclick="deleteDisease({{item.Disease_ID}})">❌</p>
-        </div>
+        {% if item.Name != 'Не обнаружено' and item.Name != 'Не исследовано'%}
+            <div style="display: flex" id="d{{item.Disease_ID}}">
+                <p>{{item.Name}}</p> <p class="cross" onclick="deleteDisease({{item.Disease_ID}})">❌</p>
+            </div>
+        {% endif %}
     {% endfor %}
     <div class="controls" id="target">
         <input type="text" class="form-control" id="inp" />

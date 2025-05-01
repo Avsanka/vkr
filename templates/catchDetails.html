@@ -97,9 +97,9 @@
                         controls.addEventListener('change', e => {
                         toggleColumn(e.target.dataset.columnClass);
                         });
-
+                        console.log(answer);
                         let accuracy = Number(({{catch.Catched_Amount}} / {{catch.Traps_Amount}} * 100).toFixed(2));
-                        let discovered = Number((answer.length / {{catch.Catched_Amount}} * 100).toFixed(2));
+                        let discovered = Number(((answer.filter(item => item.Disease !== 'Не исследовано')).length / {{catch.Catched_Amount}} * 100).toFixed(2));
                         setDash(accuracy, 'accuracy');
                         setDash(discovered, 'discovered');
 

@@ -227,7 +227,7 @@ def editMice(catchID):
             types = cur.fetchall()
             cur.execute(f"select * from pregnancies")
             pregnancies = cur.fetchall()
-            cur.execute(f"select * from diseases")
+            cur.execute(f"select * from diseases order by Disease_ID desc")
             diseases = cur.fetchall()
             cur.execute(f"select * from catch where ID_Catch = {catchID}")
             catch = cur.fetchone()

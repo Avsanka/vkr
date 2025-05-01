@@ -7,30 +7,41 @@
     <link href="{{url_for('static', filename='css/addMice.css')}}" rel="stylesheet">
     <link rel="icon" href="{{url_for('static', filename='mouse_fav.png')}}" type="image/png">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
     <script>
         function deleteRow(id)
         {
             document.getElementById(id).remove();
         }
-        let counter = 10000;
+        let counter = -1;
+
         function addRow()
         {
             let table = document.getElementById("data-table");
-            counter += 1;
+            counter -= 1;
+            const newRow = document.createElement('tr');
+            newRow.id = counter;
             let HTML = "";
             HTML += '<tr id="' + counter + '"><td><button type="button" class="btn btn-danger" onclick="deleteRow('+ counter + ')">-</button></td>';
-            HTML += '<td><select name="type" class="form-select" style="width: 250px;">{% for type in types %}<option value="{{type.ID_Type}}">{{type.Name}}</option>{% endfor %} </select> </td>';
-            HTML += '<td><input minlength="1" maxlength="1" name="gender" type="text" class="form-control" style="min-width: 50px;"></td>';
-            HTML += '<td><input minlength="2" maxlength="2" name="age" type="text" class="form-control"></td>';
+            HTML += '<td><select name="type" class="selectpicker" data-live-search="true" style="width: 250px;">{% for type in types %}<option value="{{type.ID_Type}}">{{type.Name}}</option>{% endfor %} </select> </td>';
+            HTML += '<td><select name="gender" class="form-select" style="min-width: 100px;"><option value=""><option value="f">f</option><option value="m">m</option></select></td>';
+            HTML += '<td><select name="age" class="form-select" style="min-width: 100px;"><option value=""></option><option value="ad">ad</option><option value="jv">jv</option></select></td>';
             HTML += '<td><select name="pregnancy" class="form-select">{% for preg in pregnancies %}<option value="{{preg.ID_Pregnancy}}">{{preg.Name}}</option>{% endfor %} </select> </td>';
             HTML += '<td><input name="embryos" type="number" class="form-control"></td>';
-            HTML += '<td><select name="disease" class="form-select" style="width: 250px;">{% for disease in diseases %}<option value="{{disease.Disease_ID}}">{{disease.Name}}</option>{% endfor %} </select> </td>';
+            HTML += '<td><select name="disease" class="selectpicker" data-live-search="true" style="width: 250px;">{% for disease in diseases %}<option value="{{disease.Disease_ID}}">{{disease.Name}}</option>{% endfor %} </select> </td>';
             HTML += '</tr>'
-            table.innerHTML += HTML;
+            newRow.innerHTML = HTML;
+            table.appendChild(newRow);
+            $('.selectpicker').selectpicker();
         }
 
         $(document).ready(() =>
             {
+                //$('.selectpicker').selectpicker();
                 $("form").submit(function (e){
                     e.preventDefault();
 
@@ -64,8 +75,8 @@
                     const rowData = {
                         type: parseInt(row.querySelector('select[name="type"]').value),
                         pregnancy: parseInt(row.querySelector('select[name="pregnancy"]').value),
-                        gender: row.querySelector('input[name="gender"]').value,
-                        age: row.querySelector('input[name="age"]').value,
+                        gender: row.querySelector('select[name="gender"]').value,
+                        age: row.querySelector('select[name="age"]').value,
                         embryos: parseInt(row.querySelector('input[name="embryos"]').value),
                         disease: parseInt(row.querySelector('select[name="disease"]').value)
                     };
@@ -87,7 +98,6 @@
                     });
                 });
             });
-
     </script>
 </head>
 <body>
@@ -111,15 +121,28 @@
             <tr id="{{item.ID_Mouse}}">
                 <td><button type="button" class="btn btn-danger" onclick="deleteRow('{{item.ID_Mouse}}')">-</button></td>
                 <td class='col-1'>
-                    <select name ="type" class="form-select" style="width: 250px;">
+<!--                    <select name ="type" class="form-select" style="width: 250px;">-->
+                    <select name ="type" class="selectpicker" style="width: 250px;" data-live-search="true">
                         {% for type in types %}
                             <option value="{{type.ID_Type}}" {% if item.Type_ID == type.ID_Type %} selected {% endif %}>{{type.Name}}</option>
                         {% endfor %}
                     </select>
                 </td>
 
-                <td class='col-2'><input minlength="1" maxlength="1" name="gender" type="text" value="{{item.Gender}}" class="form-control" style="min-width: 50px;"></td>
-                <td class='col-3'><input minlength="2" maxlength="2" name="age" type="text" value="{{item.Age}}" class="form-control"></td>
+                <td class='col-2'>
+<!--                    <input minlength="1" maxlength="1" name="gender" type="text" value="{{item.Gender}}" class="form-control" style="min-width: 50px;">-->
+                    <select name="gender" class="form-select" style="min-width: 100px;">
+                        <option value="f" {% if item.Gender == 'f' %} selected {%endif%}>f</option>
+                        <option value="m" {% if item.Gender == 'm' %} selected {%endif%}>m</option>
+                    </select>
+                </td>
+                <td class='col-3'>
+<!--                    <input minlength="2" maxlength="2" name="age" type="text" value="{{item.Age}}" class="form-control">-->
+                    <select name="age" class="form-select" style="min-width: 100px;">
+                        <option value="ad" {% if item.Age == 'ad' %} selected {%endif%} >ad</option>
+                        <option value="jv" {% if item.Age == 'jv' %} selected {%endif%} >jv</option>
+                    </select>
+                </td>
 
                 <td class='col-4'>
                     <select name="pregnancy" class="form-select" >
@@ -132,7 +155,7 @@
                 <td class='col-5'><input name="embryos" type="number" value="{{item.Embryos_Amount}}" class="form-control"></td>
 
                 <td class='col-6'>
-                    <select name ="disease" class="form-select" style="width: 250px;">
+                    <select name ="disease" class="selectpicker" style="width: 250px;" data-live-search="true">
                         {% for disease in diseases %}
                             <option value="{{disease.Disease_ID}}" {% if item.ID_Disease == disease.Disease_ID %} selected {% endif %}>{{disease.Name}}</option>
                         {% endfor %}
