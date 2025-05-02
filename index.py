@@ -403,11 +403,20 @@ def getAllDiseases():
 @app.route('/addDisease/<string:name>', methods=['POST'])
 @login_required
 def addDisease(name):
-    with myDbConnection().connect() as db:
-        cur = db.cursor()
-        cur.execute(f"INSERT INTO `diseases` (`Disease_ID`, `Name`) VALUES (NULL, '{name}');")
-        db.commit()
-    return "success", http.HTTPStatus(200)
+    if name.upper() != 'НЕ ОБНАРУЖЕНО' and name.upper() != 'НЕ ИССЛЕДОВАНО':
+        with myDbConnection().connect() as db:
+            cur = db.cursor()
+            cur.execute(f"select name from diseases")
+            data = cur.fetchall()
+            diseases = [item['name'].upper() for item in data]
+            if name.upper() not in diseases:
+                cur.execute(f"INSERT INTO `diseases` (`Disease_ID`, `Name`) VALUES (NULL, '{name}');")
+                db.commit()
+                return "success", http.HTTPStatus(200)
+            else:
+                return "already exists", http.HTTPStatus(200)
+    else:
+        return "already exists", http.HTTPStatus(200)
 
 @app.route('/deleteDisease/<int:id>', methods=['DELETE'])
 @login_required

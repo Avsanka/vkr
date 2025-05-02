@@ -21,6 +21,13 @@
                     url: '/addDisease/' + name,
                     success: function(answer)
                     {
+                        if (answer == 'already exists')
+                        {
+                            alert('Нельзя добавить данную строку (уже существует)');
+                            btn.disabled = false;
+                            document.getElementById('inp').value = "";
+                            return;
+                        }
                         target = document.getElementById('target');
                         const p = document.createElement('p');
                         p.innerHTML = name;
