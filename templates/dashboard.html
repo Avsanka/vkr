@@ -15,8 +15,13 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
-    {% include 'navbar.html' %}
-
+    {% if role == "" %}
+        {% include 'unauthNavbar.html' %}
+    {% elif role == 'admin' %}
+        {% include 'navbar.html' %}
+    {% else %}
+        {% include 'defaultNavbar.html' %}
+    {% endif %}
     <div class="filter_container">
         <select class="form-select" id="yearSelect" onchange="updateDash()">
             <option id="y25" value="2025" selected>2025</option>

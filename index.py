@@ -5,7 +5,7 @@ import random
 import pandas as pd
 from datetime import datetime
 from flask import Flask, render_template, request, send_file, redirect, url_for
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import myDbConnection, UserLogin
 from werkzeug.security import check_password_hash
 
@@ -16,6 +16,16 @@ app.secret_key = "super secret key"  # я знаю что так нельзя д
 @app.errorhandler(401)
 def unauthorized(error):
     return redirect(url_for('login'))
+
+@app.errorhandler(403)
+def weakUser(error):
+    return redirect(url_for('showDashboard'))
+
+@app.errorhandler(404)
+def notFound(error):
+    return redirect(url_for('showDashboard'))
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -325,13 +335,14 @@ def downloadExcel(catchID):
     return send_file(output, download_name=f"data.xlsx", as_attachment=True), http.HTTPStatus(200)
 
 @app.route('/dashboard', methods=['GET'])
-@login_required
 def showDashboard():
-    return render_template('dashboard.html')
+    try:
+        return render_template('dashboard.html', role=current_user.role)
+    except:
+        return render_template('dashboard.html', role="")
 
 
 @app.route('/getDiseases/<int:year>', methods=['GET'])
-@login_required
 def getDiseases(year):
     with myDbConnection().connect() as db:
         cur = db.cursor()
@@ -347,7 +358,6 @@ def getDiseases(year):
 
 
 @app.route('/caughtMiceInYear/<int:year>', methods=['GET'])
-@login_required
 def catchedMiceInYear(year):
     with myDbConnection().connect() as db:
         cur = db.cursor()
@@ -365,7 +375,6 @@ def catchedMiceInYear(year):
 
 
 @app.route('/diseaseMap/<int:year>', methods=['GET'])
-@login_required
 def diseaseMap(year):
     with myDbConnection().connect() as db:
         cur = db.cursor()
@@ -381,8 +390,6 @@ def diseaseMap(year):
         for item in data:
             item['Coords_X'] = float(item['Coords_X'])
             item['Coords_Y'] = float(item['Coords_Y'])
-            #item['Coords_X'] += random.uniform(-0.002999, 0.002999)
-            #item['Coords_Y'] += random.uniform(-0.002999, 0.002999)
             item['Coords_X'] = round(item['Coords_X'], 6)
             item['Coords_Y'] = round(item['Coords_Y'], 6)
         if data:
@@ -393,6 +400,8 @@ def diseaseMap(year):
 @app.route('/getAllDiseases', methods=['GET'])
 @login_required
 def getAllDiseases():
+    if current_user.role != 'admin':
+        return "Доступ только для администратора", 403
     with myDbConnection().connect() as db:
         cur = db.cursor()
         cur.execute(f"select * from diseases")
@@ -403,6 +412,8 @@ def getAllDiseases():
 @app.route('/addDisease/<string:name>', methods=['POST'])
 @login_required
 def addDisease(name):
+    if current_user.role != 'admin':
+        return "Доступ только для администратора", 403
     if name.upper() != 'НЕ ОБНАРУЖЕНО' and name.upper() != 'НЕ ИССЛЕДОВАНО':
         with myDbConnection().connect() as db:
             cur = db.cursor()
@@ -421,6 +432,8 @@ def addDisease(name):
 @app.route('/deleteDisease/<int:id>', methods=['DELETE'])
 @login_required
 def deleteDisease(id):
+    if current_user.role != 'admin':
+        return "Доступ только для администратора", 403
     with myDbConnection().connect() as db:
         cur = db.cursor()
         try:
@@ -430,8 +443,51 @@ def deleteDisease(id):
         except:
             return "error", http.HTTPStatus(200)
 
-@app.route('/miceGenderStats/<int:year>', methods=['GET'])
+@app.route('/getAllTypes', methods=['GET'])
 @login_required
+def getAllTypes():
+    if current_user.role != 'admin':
+        return "Доступ только для администратора", 403
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"select * from types")
+        data = cur.fetchall()
+        return render_template("types.html", data=data)
+
+
+@app.route('/addType/<string:name>', methods=['POST'])
+@login_required
+def addType(name):
+    if current_user.role != 'admin':
+        return "Доступ только для администратора", 403
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"select name from types")
+        data = cur.fetchall()
+        types = [item['name'].upper() for item in data]
+        if name.upper() not in types:
+            cur.execute(f"INSERT INTO `types` (`ID_Type`, `Name`) VALUES (NULL, '{name}');")
+            db.commit()
+            return "success", http.HTTPStatus(200)
+        else:
+            return "already exists", http.HTTPStatus(200)
+
+
+@app.route('/deleteType/<int:id>', methods=['DELETE'])
+@login_required
+def deleteType(id):
+    if current_user.role != 'admin':
+        return "Доступ только для администратора", 403
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        try:
+            cur.execute(f"DELETE FROM `types` WHERE `types`.`ID_Type` = {id}")
+            db.commit()
+            return "success", http.HTTPStatus(200)
+        except:
+            return "error", http.HTTPStatus(200)
+
+@app.route('/miceGenderStats/<int:year>', methods=['GET'])
 def stats(year):
     with myDbConnection().connect() as db:
         cur = db.cursor()
@@ -446,6 +502,7 @@ def stats(year):
                     f"WHERE YEAR(catch.Date) = {year} AND mouse.Gender = 'm'")
         male = cur.fetchall()
         return [fem, male]
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)

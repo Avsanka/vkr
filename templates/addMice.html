@@ -101,7 +101,11 @@
     </script>
 </head>
 <body>
+{% if current_user.role == 'admin' %}
 {% include 'navbar.html' %}
+{% else %}
+{% include 'defaultNavbar.html' %}
+{% endif %}
     <h6 onclick="window.location.href='/catchDetails/{{catch.ID_Catch}}'"> ←Назад</h6>
 <form id="mainForm">
 <table class="table table-striped main-table" id="miceTable">

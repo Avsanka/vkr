@@ -57,7 +57,11 @@
     </script>
 </head>
 <body>
+{% if current_user.role == 'admin' %}
 {% include 'navbar.html' %}
+{% else %}
+{% include 'defaultNavbar.html' %}
+{% endif %}
 <div class="form-div">
 
     <form id="mainForm" style="width: 70%">

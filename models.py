@@ -19,11 +19,13 @@ class myDbConnection:
 
 
 class UserLogin():
+    role = ""
     def fromDB(self, user_id):
         with myDbConnection().connect() as db:
             cur = db.cursor()
             cur.execute(f"select * from users where ID_User = {user_id} limit 1")
             res = cur.fetchone()
+            self.role = res['role']
             self.__user = res
             return self
 

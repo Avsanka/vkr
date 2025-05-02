@@ -101,7 +101,11 @@
     </script>
 </head>
 <body>
+{% if current_user.role == 'admin' %}
 {% include 'navbar.html' %}
+{% else %}
+{% include 'defaultNavbar.html' %}
+{% endif %}
     <div class="filter_toggle" id="filterToggle">
         Фильтры <span id="arrow">↑</span>
     </div>

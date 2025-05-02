@@ -54,7 +54,11 @@
 
 </head>
 <body>
+{% if current_user.role == 'admin' %}
 {% include 'navbar.html' %}
+{% else %}
+{% include 'defaultNavbar.html' %}
+{% endif %}
     <h6 style="margin-top: 20px;" onclick="window.location.href='/catchDetails/{{catch.ID_Catch}}'"> ←Назад</h6>
 <div class="form-div">
     <form id="mainForm" style="width: 70%">

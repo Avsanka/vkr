@@ -6,4 +6,5 @@ docker-compose.yml
 flask-deployment.yaml
 flask-service.yaml
 __pycache__
+1.py
 
