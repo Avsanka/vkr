@@ -13,9 +13,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 
     <script>
+
+        function numerate()
+        {
+            let numeration = 1;
+            const rows = document.querySelectorAll('#numP');
+            rows.forEach(row => {
+                    row.innerHTML = numeration;
+                    numeration++;
+            });
+        }
+
         function deleteRow(id)
         {
             document.getElementById(id).remove();
+            numerate();
         }
         let counter = -1;
 
@@ -27,9 +39,10 @@
             newRow.id = counter;
             let HTML = "";
             HTML += '<tr id="' + counter + '"><td><button type="button" class="btn btn-danger" onclick="deleteRow('+ counter + ')">-</button></td>';
+            HTML += '<tr id="' + counter + '"><td><p style="margin-top: 7px; height: 0" id="numP"></p></td>';
             HTML += '<td><select name="type" class="selectpicker" data-live-search="true" style="width: 250px;">{% for type in types %}<option value="{{type.ID_Type}}">{{type.Name}}</option>{% endfor %} </select> </td>';
             HTML += '<td><select name="gender" class="form-select" style="min-width: 100px;"><option value=""><option value="f">f</option><option value="m">m</option></select></td>';
-            HTML += '<td><select name="age" class="form-select" style="min-width: 100px;"><option value=""></option><option value="ad">ad</option><option value="jv">jv</option></select></td>';
+            HTML += '<td><select name="age" class="form-select" style="min-width: 100px;"><option value="ad">ad</option><option value="jv">jv</option></select></td>';
             HTML += '<td><select name="pregnancy" class="form-select">{% for preg in pregnancies %}<option value="{{preg.ID_Pregnancy}}">{{preg.Name}}</option>{% endfor %} </select> </td>';
             HTML += '<td><input name="embryos" type="number" class="form-control"></td>';
             HTML += '<td><select name="disease" class="selectpicker" data-live-search="true" style="width: 250px;">{% for disease in diseases %}<option value="{{disease.Disease_ID}}">{{disease.Name}}</option>{% endfor %} </select> </td>';
@@ -37,10 +50,12 @@
             newRow.innerHTML = HTML;
             table.appendChild(newRow);
             $('.selectpicker').selectpicker();
+            numerate();
         }
 
         $(document).ready(() =>
             {
+                numerate();
                 //$('.selectpicker').selectpicker();
                 $("form").submit(function (e){
                     e.preventDefault();
@@ -112,6 +127,7 @@
       <thead>
         <tr>
           <th scope="col">#</th>
+          <th scope="col">№</th>
           <th class='col-1' scope="col">Тип</th>
           <th class='col-2' scope="col">Пол</th>
           <th class='col-3' scope="col">Возраст</th>
@@ -124,6 +140,11 @@
         {% for item in mice %}
             <tr id="{{item.ID_Mouse}}">
                 <td><button type="button" class="btn btn-danger" onclick="deleteRow('{{item.ID_Mouse}}')">-</button></td>
+
+                <td class='col-0'>
+                    <p style="margin-top: 7px; height: 0" id="numP"></p>
+                </td>
+
                 <td class='col-1'>
 <!--                    <select name ="type" class="form-select" style="width: 250px;">-->
                     <select name ="type" class="selectpicker" style="width: 250px;" data-live-search="true">

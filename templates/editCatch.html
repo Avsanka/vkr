@@ -29,7 +29,7 @@
                         alert("Количество ловушек не может быть меньше количества пойманных");
                         return;
                     }
-                    else if(cx[0].value.length < 7 || cy[0].value.length < 7)
+                    else if(cx[0].value.length < 8 || cy[0].value.length < 8)
                     {
                         alert("Неверно заполнены координаты!")
                         return;
@@ -92,11 +92,11 @@
         <label for="Place">Место</label>
         <input id="Place" class="form-control" type="text" name="place" value="{{catch.Place}}"/>
 
-        <label for="Coords_x">Координаты по X (в формате 12.34567)</label>
-        <input id="Coords_x" class="form-control" type="number" min="0" max="180" step="0.00001" name="cx" value="{{catch.Coords_X}}"/>
+        <label for="Coords_x">Координаты по X (в формате 12.345678)</label>
+        <input id="Coords_x" class="form-control" type="number" min="0" max="180" step="0.000001" name="cx" value="{{catch.Coords_X}}"/>
 
-        <label for="Coords_y">Координаты по Y (в формате 12.34567)</label>
-        <input id="Coords_y" class="form-control" type="number" min="0" max="180" step="0.00001" name="cy" value="{{catch.Coords_Y}}" />
+        <label for="Coords_y">Координаты по Y (в формате 12.345678)</label>
+        <input id="Coords_y" class="form-control" type="number" min="0" max="180" step="0.000001" name="cy" value="{{catch.Coords_Y}}" />
 
         <label for="Traps">Количество ловушек</label>
         <input id="Traps" class="form-control" type="number" name="traps" value="{{catch.Traps_Amount}}" />

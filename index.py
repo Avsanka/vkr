@@ -101,6 +101,10 @@ def filteredCatches():
         cur = db.cursor()
         cur.execute(query)
         catches = cur.fetchall()
+        for item in catches:
+            cur.execute(f"select * from stations where ID_Station = {item['Station_ID']} limit 1")
+            station = cur.fetchone()['Name']
+            item['station_name'] = station
         if len(catches) == 0:
             return default, http.HTTPStatus(200)
         else:
@@ -172,7 +176,9 @@ def addCatch():
                 cur.execute(f"insert into catch(Date, Zone_ID, Station_ID, Biotope, District_ID, Place, Coords_X, Coords_Y, Traps_Amount, Catched_Amount, Comments)"
                             f"values ('{date}', '{zone}', '{station}', '{biotope}', '{district}', '{place}', '{cx}', '{cy}', '{traps}', '{catched}', '{comments}');")
                 db.commit()
-                return "success", http.HTTPStatus(200)
+                cur.execute(f"select * from catch order by ID_Catch desc limit 1")
+                id = cur.fetchone()['ID_Catch']
+                return str(id), http.HTTPStatus(200)
         except:
             return "error", http.HTTPStatus(400)
 

@@ -84,6 +84,7 @@
                             const id = answer[i].ID_Catch;
                             HTML += "<tr onclick='details(" + id + ")'> <th scope=row>" + formattedDate +"</th>";
                             HTML += "<td>" + answer[i].Place +"</td>";
+                            HTML += "<td>" + answer[i].station_name +"</td>";
                             HTML += "<td>" + answer[i].Traps_Amount + "</td>";
                             HTML += "<td>" + answer[i].Catched_Amount +"</td> </tr>";
                        }
@@ -186,6 +187,7 @@
     <tr class="header_str">
       <th scope="col">Дата</th>
       <th scope="col">Место</th>
+        <th scope="col">Стация</th>
       <th scope="col">Кол-во ловушек</th>
       <th scope="col">Поймано</th>
     </tr>
