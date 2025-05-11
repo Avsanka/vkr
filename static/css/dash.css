@@ -1,12 +1,3 @@
-body {
-    font-family: Arial, sans-serif;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Занимает полную высоту экрана */
-    margin: 0;
-    background-color: #f9f9f9; /* Светлый фон для контраста */
-}
-
 .dashboard {
     display: flex;
     justify-content: space-around;
