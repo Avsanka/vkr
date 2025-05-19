@@ -84,11 +84,15 @@ async function fetchDiseaseData(year) {
         .then(data => {
             const labels = monthNames;
             const amounts = Array(12).fill(0);
+            const amountsDiscovered = Array(12).fill(0);
 
             // Заполняем массивы значениями
-            for (const item of data) {
-                //labels.push(monthNames[item.month - 1]); // Добавляем номер месяца
+            for (const item of data[0]) {
                 amounts[item.month - 1] = item.amount; // Добавляем количество пойманных мышей
+            }
+
+            for (const item of data[1]) {
+                amountsDiscovered[item.month - 1] = item.amountDiscovered; // Добавляем количество пойманных мышей
             }
 
             // Создание графика
@@ -98,9 +102,16 @@ async function fetchDiseaseData(year) {
                 data: {
                     labels: labels, // Метки по оси x
                     datasets: [{
-                        label: 'Количество пойманных мышей',
+                        label: 'Количество пойманных млекопитающих',
                         data: amounts, // Данные для графика
                         backgroundColor: 'rgba(75, 192, 192, 0.6)', // Цвет заливки
+                        borderColor: 'rgba(75, 192, 192, 1)', // Цвет линии
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Количество исследованных млекопитающих',
+                        data: amountsDiscovered, // Данные для графика
+                        backgroundColor: 'rgba(75, 160, 160, 1)', // Цвет заливки
                         borderColor: 'rgba(75, 192, 192, 1)', // Цвет линии
                         borderWidth: 1
                     }]

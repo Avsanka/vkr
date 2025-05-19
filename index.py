@@ -373,18 +373,43 @@ def catchedMiceInYear(year):
                     f"GROUP by MONTH(Date)"
                     f"ORDER by MONTH(Date)")
         mice = cur.fetchall()
+        cur.execute(f"select month(catch.Date) as month, count(mouse.ID_Disease) as amountDiscovered "
+                    f"from mouse "
+                    f"left JOIN catch ON mouse.Catch_ID = catch.ID_Catch "
+                    f"left join diseases ON mouse.ID_Disease = diseases.Disease_ID "
+                    f"WHERE diseases.Name != 'Не исследовано' AND "
+                    f"YEAR(catch.Date) = {year} "
+                    f"GROUP by month(catch.Date) "
+                    f"order by month(catch.Date)")
+        discovered = cur.fetchall()
         for item in mice:
             item['amount'] = int(item['amount'])
+        for item in discovered:
+            item['amountDiscovered'] = int(item['amountDiscovered'])
+        output = [mice, discovered]
         if mice:
-            return mice
+            return output
         return [{'month': 'Нет информации', 'amount': 0}]
 
+
+@app.route('/sqlTest')
+def testsql():
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"select count(mouse.ID_Disease) as amountDiscovered, catch.Date "
+                    f"from mouse "
+                    f"left JOIN catch ON mouse.Catch_ID = catch.ID_Catch "
+                    f"left join diseases ON mouse.ID_Disease = diseases.Disease_ID "
+                    f"WHERE diseases.Name != 'Не исследовано' "
+                    f"GROUP by month(catch.Date), catch.Date")
+        return cur.fetchall()
 
 @app.route('/diseaseMap/<int:year>', methods=['GET'])
 def diseaseMap(year):
     with myDbConnection().connect() as db:
         cur = db.cursor()
-        cur.execute(f"SELECT catch.Coords_X, catch.Coords_Y, diseases.Name as disease, COUNT(mouse.ID_Disease) as amount"
+        cur.execute(f"SELECT catch.Coords_X, catch.Coords_Y, diseases.Name as disease, "
+                    f"COUNT(mouse.ID_Disease) as amount"
                     f" FROM mouse "
                     f"left join diseases ON mouse.ID_Disease = diseases.Disease_ID "
                     f"left join catch on mouse.Catch_ID = catch.ID_Catch "
@@ -392,7 +417,6 @@ def diseaseMap(year):
                     f"GROUP by diseases.Name, catch.Coords_X, catch.Coords_Y "
                     f"order by catch.Coords_X, catch.Coords_Y ")
         data = cur.fetchall()
-
         for item in data:
             item['Coords_X'] = float(item['Coords_X'])
             item['Coords_Y'] = float(item['Coords_Y'])
