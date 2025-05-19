@@ -392,18 +392,6 @@ def catchedMiceInYear(year):
         return [{'month': 'Нет информации', 'amount': 0}]
 
 
-@app.route('/sqlTest')
-def testsql():
-    with myDbConnection().connect() as db:
-        cur = db.cursor()
-        cur.execute(f"select count(mouse.ID_Disease) as amountDiscovered, catch.Date "
-                    f"from mouse "
-                    f"left JOIN catch ON mouse.Catch_ID = catch.ID_Catch "
-                    f"left join diseases ON mouse.ID_Disease = diseases.Disease_ID "
-                    f"WHERE diseases.Name != 'Не исследовано' "
-                    f"GROUP by month(catch.Date), catch.Date")
-        return cur.fetchall()
-
 @app.route('/diseaseMap/<int:year>', methods=['GET'])
 def diseaseMap(year):
     with myDbConnection().connect() as db:
