@@ -1,5 +1,6 @@
-let chart;
+let yearChart;
 let mouseChart;
+let chart;
 let mapBool = false;
 
 async function fetchDiseaseData(year) {
@@ -24,7 +25,7 @@ async function fetchDiseaseData(year) {
 
         const ctx = document.getElementById('diseaseChart').getContext('2d');
 
-        chart = new Chart(ctx, {
+        yearChart = new Chart(ctx, {
             type: 'pie',
             data: {
                 labels: diseases,
@@ -242,35 +243,232 @@ async function fetchDiseaseData(year) {
         const year = yearSelect.value;
         yearSelect.disabled = true;
 
-            if(chart){
-                chart.destroy();
+            if(yearChart){
+                yearChart.destroy();
             }
             if(mouseChart)
             {
                 mouseChart.destroy();
             }
+            if(chart)
+            {
+                chart.destroy();
+            }
         drawChart(year);
         miceGraph(year);
         drawMap(year);
         drawBar(year);
+        drawHeatMap(year);
     }
 
-//function getColor(disease) {
-//    const colors = {
-//        "ГАЧ": "Red",
-//        "Грипп А": "Blue",
-//        "Иерсиниоз": "Green",
-//        "ИКБ": "Yellow",
-//        "Лептоспироз": "Orange",
-//        "ЛЗН": "Purple",
-//        "Листериоз": "Pink",
-//        "МЭЧ": "Brown",
-//        "Орнитоз": "Cyan",
-//        "Псевдо и иерсиниоз": "Magenta",
-//        "Псевдотуберкулез": "Teal",
-//        "Туляремия": "Indigo",
-//        "Хантавирусы": "Black"
-//    };
-//    return colors[disease] || "Red";
-//}
+
+
+
+const monthOrder = ['january', 'february', 'march', 'april', 'may', 'june',
+                           'july', 'august', 'september', 'october', 'november', 'december'];
+     const monthNames = {
+            january: 'Январь',
+            february: 'Февраль',
+            march: 'Март',
+            april: 'Апрель',
+            may: 'Май',
+            june: 'Июнь',
+            july: 'Июль',
+            august: 'Август',
+            september: 'Сентябрь',
+            october: 'Октябрь',
+            november: 'Ноябрь',
+            december: 'Декабрь'
+        };
+
+     const partNames = {
+            0: '1-я неделя',
+            1: '2-я неделя',
+            2: '3-я неделя',
+            3: '4-я неделя'
+        };
+
+
+
+function drawHeatMap(year)
+{
+    $.ajax ({
+        type: 'GET',
+        url: '/getHeatData/' + year,
+        success: function(answer)
+        {
+            if (answer == "no_data")
+            {
+                return;
+            }
+
+            data = answer;
+            const seriesData = [];
+
+            Object.values(partNames).forEach((partName, partIndex) => {
+                const weekData = {
+                    name: partName,
+                    data: []
+                };
+
+                monthOrder.forEach(month => {
+                    weekData.data.push({
+                        x: monthNames[month],
+                        y: (data[partIndex] || {})[month] || 0
+                    });
+                });
+
+                seriesData.push(weekData);
+            });
+
+
+                const options = {
+                series: seriesData,
+                chart: {
+                    height: 500,
+                    type: 'heatmap',
+                    toolbar: {
+                        show: true,
+                        tools: {
+                            download: true,
+                            selection: false,
+                            zoom: false,
+                            zoomin: true,
+                            zoomout: true,
+                            pan: false,
+                            reset: true
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    horizontalAlign: 'center',
+                    fontSize: '14px',
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 5
+                    }
+                },
+                dataLabels: {
+                    enabled: true,
+                    style: {
+                        fontSize: '12px',
+                        fontFamily: 'Arial, sans-serif',
+                        fontWeight: 'bold'
+                    },
+                    formatter: function(val) {
+                        return val > 0 ? val : '';
+                    }
+                },
+                colors: ["#F3F4F6", "#BFDBFE", "#93C5FD", "#60A5FA", "#3B82F6", "#2563EB", "#1D4ED8", "#1E40AF", "#1E3A8A"],
+                xaxis: {
+                    type: 'category',
+                    categories: Object.values(monthNames), // Месяцы по горизонтали
+                    labels: {
+                        style: {
+                            fontSize: '13px',
+                            fontWeight: 600
+                        }
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            fontSize: '13px',
+                            fontWeight: 600
+                        }
+                    }
+                },
+                plotOptions: {
+                    heatmap: {
+                        radius: 4,
+                        enableShades: true,
+                        shadeIntensity: 0.5,
+                        reverseNegativeShade: true,
+                        distributed: false,
+                        colorScale: {
+                            ranges: [
+                                { from: 0, to: 0, color: "#F3F4F6", name: "Нет данных" },
+                                { from: 1, to: 5, color: "#BFDBFE", name: "Мало" },
+                                { from: 6, to: 10, color: "#93C5FD", name: "Умеренно" },
+                                { from: 11, to: 15, color: "#60A5FA", name: "Средне" },
+                                { from: 16, to: 20, color: "#3B82F6", name: "Выше среднего" },
+                                { from: 21, to: 25, color: "#2563EB", name: "Много" },
+                                { from: 26, to: 30, color: "#1D4ED8", name: "Очень много" },
+                                { from: 31, to: 35, color: "#1E40AF", name: "Пик" },
+                                { from: 36, to: 100, color: "#1E3A8A", name: "Максимум" }
+                            ]
+                        }
+                    }
+                },
+
+                grid: {
+                    borderColor: '#f1f1f1',
+                    padding: {
+                        top: 20,
+                        right: 20,
+                        bottom: 20,
+                        left: 20
+                    }
+                },
+                responsive: [{
+                    breakpoint: 768,
+                    options: {
+                        chart: {
+                            height: 400
+                        },
+                        dataLabels: {
+                            fontSize: '10px'
+                        }
+                    }
+                }]
+            };
+
+            chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+            calculateStatistics();
+        }
+    })
+}
+
+
+
+ function calculateStatistics() {
+            let total = 0;
+            let max = 0;
+            const monthTotals = {};
+
+            // Инициализация сумм по месяцам
+            monthOrder.forEach(month => {
+                monthTotals[month] = 0;
+            });
+
+            // Суммирование всех данных
+            data.forEach(weekData => {
+                monthOrder.forEach(month => {
+                    const value = weekData[month] || 0;
+                    total += value;
+                    monthTotals[month] += value;
+                    if (value > max) max = value;
+                });
+            });
+
+            // Находим самый активный месяц
+            let maxMonth = '';
+            let maxMonthValue = 0;
+
+            monthOrder.forEach(month => {
+                if (monthTotals[month] > maxMonthValue) {
+                    maxMonthValue = monthTotals[month];
+                    maxMonth = month;
+                }
+            });
+
+            return {
+                total,
+                max,
+                activeMonth: maxMonth ? monthNames[maxMonth] : '-',
+                activeMonthValue: maxMonthValue
+            };
+        }
 

@@ -522,5 +522,59 @@ def stats(year):
         return [fem, male]
 
 
+
+
+
+
+@app.route('/getHeatData/<int:year>', methods=['GET'])
+def getHeatData(year):
+    with myDbConnection().connect() as db:
+        cur = db.cursor()
+        cur.execute(f"SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))")
+        cur.execute(f"SELECT "
+                    f"CASE "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 7 THEN 'Week 1' "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 14 THEN 'Week 2' "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 21 THEN 'Week 3' "
+                        f"ELSE 'Week 4' "
+                    f"END AS month_part, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 1 THEN mouse.ID_Mouse END) AS january, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 2 THEN mouse.ID_Mouse END) AS february, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 3 THEN mouse.ID_Mouse END) AS march, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 4 THEN mouse.ID_Mouse END) AS april, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 5 THEN mouse.ID_Mouse END) AS may, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 6 THEN mouse.ID_Mouse END) AS june, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 7 THEN mouse.ID_Mouse END) AS july, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 8 THEN mouse.ID_Mouse END) AS august, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 9 THEN mouse.ID_Mouse END) AS september, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 10 THEN mouse.ID_Mouse END) AS october, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 11 THEN mouse.ID_Mouse END) AS november, "
+                    f"COUNT(CASE WHEN EXTRACT(MONTH FROM catch.Date) = 12 THEN mouse.ID_Mouse END) AS december "
+                f"FROM catch "
+                f"LEFT JOIN mouse ON catch.ID_Catch = mouse.Catch_ID "
+                f"LEFT join diseases on mouse.ID_Disease = diseases.Disease_ID "
+                f"WHERE EXTRACT(YEAR FROM catch.Date) = {year} AND diseases.Name NOT LIKE 'Не исследовано' "
+                f"GROUP BY "
+                    f"CASE "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 7 THEN 'Week 1' "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 14 THEN 'Week 2' "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 21 THEN 'Week 3' "
+                        f"ELSE 'Week 4' "
+                    f"END "
+                f"ORDER BY "
+                    f"CASE "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 7 THEN 1 "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 14 THEN 2 "
+                        f"WHEN EXTRACT(DAY FROM catch.date) <= 21 THEN 3 "
+                        f"ELSE 4 "
+                    f"END ")
+        heatData = cur.fetchall()
+        if (heatData):
+            return heatData, http.HTTPStatus(200)
+        else:
+            return "no_data", http.HTTPStatus(200)
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8081)
+
+
